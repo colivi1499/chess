@@ -53,12 +53,9 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> moves = new ArrayList<>();
         switch(type) {
             case KING:
-                for (int i = 0; i < 8; i++) {
 
-                }
                 break;
             case QUEEN:
 
@@ -73,6 +70,7 @@ public class ChessPiece {
 
                 break;
             default:
+                System.out.print("Invalid piece type");
         }
 
         return new ArrayList<>();

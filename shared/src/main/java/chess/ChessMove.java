@@ -1,5 +1,7 @@
 package chess;
 
+import static chess.ChessPiece.PieceType.PAWN;
+
 /**
  * Represents moving a chess piece on a chessboard
  * <p>
@@ -17,6 +19,10 @@ public class ChessMove {
         this.startPosition = startPosition;
         this.endPosition = endPosition;
         this.promotionPiece = promotionPiece;
+    }
+
+    public ChessMove(ChessPosition startPosition, ChessPosition endPosition) {
+        this(startPosition,endPosition,PAWN);
     }
 
     /**
