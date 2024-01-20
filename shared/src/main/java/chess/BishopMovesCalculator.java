@@ -16,6 +16,59 @@ public class BishopMovesCalculator implements PieceMovesCalculator {
             ChessPosition positionToCheck = new ChessPosition(width,height);
             if (board.getPiece(positionToCheck) == null) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
+                break;
+            }
+            if (board.getPiece(positionToCheck).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                moves.add(new ChessMove(myPosition,positionToCheck));
+                break;
+            }
+        }
+
+        width= myPosition.getRow();
+        height = myPosition.getColumn();
+        while (width > 1 && height < 8) {
+            width--;
+            height++;
+            ChessPosition positionToCheck = new ChessPosition(width,height);
+            if (board.getPiece(positionToCheck) == null) {
+                moves.add(new ChessMove(myPosition,positionToCheck));
+                break;
+            }
+            if (board.getPiece(positionToCheck).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                moves.add(new ChessMove(myPosition,positionToCheck));
+                break;
+            }
+        }
+
+        width= myPosition.getRow();
+        height = myPosition.getColumn();
+        while (width < 8 && height > 1) {
+            width++;
+            height--;
+            ChessPosition positionToCheck = new ChessPosition(width,height);
+            if (board.getPiece(positionToCheck) == null) {
+                moves.add(new ChessMove(myPosition,positionToCheck));
+                break;
+            }
+            if (board.getPiece(positionToCheck).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                moves.add(new ChessMove(myPosition,positionToCheck));
+                break;
+            }
+        }
+
+        width= myPosition.getRow();
+        height = myPosition.getColumn();
+        while (width > 1 && height > 1) {
+            width--;
+            height--;
+            ChessPosition positionToCheck = new ChessPosition(width,height);
+            if (board.getPiece(positionToCheck) == null) {
+                moves.add(new ChessMove(myPosition,positionToCheck));
+                break;
+            }
+            if (board.getPiece(positionToCheck).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                moves.add(new ChessMove(myPosition,positionToCheck));
+                break;
             }
         }
 

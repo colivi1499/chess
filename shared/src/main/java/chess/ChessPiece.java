@@ -61,8 +61,8 @@ public class ChessPiece {
 
                 break;
             case BISHOP:
-
-                break;
+                BishopMovesCalculator bishopCalculator = new BishopMovesCalculator();
+                return bishopCalculator.pieceMoves(board,myPosition);
             case ROOK:
 
                 break;
