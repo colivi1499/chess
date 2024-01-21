@@ -9,19 +9,19 @@ public class BishopMovesCalculator implements PieceMovesCalculator {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
         int width= myPosition.getRow();
-        int height = myPosition.getColumn();
+        int height = myPosition.getColumn() ;
         while (width < 8 && height < 8) {
             width++;
             height++;
             ChessPosition positionToCheck = new ChessPosition(width,height);
             if (board.getPiece(positionToCheck) == null) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
-                break;
+                continue;
             }
             if (board.getPiece(positionToCheck).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
-                break;
             }
+            break;
         }
 
         width= myPosition.getRow();
@@ -32,12 +32,12 @@ public class BishopMovesCalculator implements PieceMovesCalculator {
             ChessPosition positionToCheck = new ChessPosition(width,height);
             if (board.getPiece(positionToCheck) == null) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
-                break;
+                continue;
             }
             if (board.getPiece(positionToCheck).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
-                break;
             }
+            break;
         }
 
         width= myPosition.getRow();
@@ -48,12 +48,12 @@ public class BishopMovesCalculator implements PieceMovesCalculator {
             ChessPosition positionToCheck = new ChessPosition(width,height);
             if (board.getPiece(positionToCheck) == null) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
-                break;
+                continue;
             }
             if (board.getPiece(positionToCheck).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
-                break;
             }
+            break;
         }
 
         width= myPosition.getRow();
@@ -64,12 +64,12 @@ public class BishopMovesCalculator implements PieceMovesCalculator {
             ChessPosition positionToCheck = new ChessPosition(width,height);
             if (board.getPiece(positionToCheck) == null) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
-                break;
+                continue;
             }
             if (board.getPiece(positionToCheck).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
-                break;
             }
+            break;
         }
 
         return moves;
