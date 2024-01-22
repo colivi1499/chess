@@ -70,8 +70,8 @@ public class ChessPiece {
                 RookMovesCalculator rookCalculator = new RookMovesCalculator();
                 return rookCalculator.pieceMoves(board,myPosition);
             case PAWN:
-
-                break;
+                PawnMovesCalculator pawnCalculator = new PawnMovesCalculator();
+                return pawnCalculator.pieceMoves(board,myPosition);
             default:
                 System.out.print("Invalid piece type");
         }
