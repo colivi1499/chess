@@ -3,16 +3,16 @@ package chess;
 import java.util.Collection;
 import java.util.ArrayList;
 
-public class KingMovesCalculator implements PieceMovesCalculator {
+public class KnightMovesCalculator implements PieceMovesCalculator {
 
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
         int width= myPosition.getRow();
         int height = myPosition.getColumn() ;
-        if (width < 8 && height < 8) {
-            width++;
-            height++;
+        if (width < 7 && height < 8) {
+            width += 2;
+            height += 1;
             ChessPosition positionToCheck = new ChessPosition(width,height);
             if (board.getPiece(positionToCheck) == null) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
@@ -24,8 +24,9 @@ public class KingMovesCalculator implements PieceMovesCalculator {
 
         width= myPosition.getRow();
         height = myPosition.getColumn() ;
-        if (height < 8) {
-            height++;
+        if (width < 8 && height < 7) {
+            width += 1;
+            height += 2;
             ChessPosition positionToCheck = new ChessPosition(width,height);
             if (board.getPiece(positionToCheck) == null) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
@@ -37,9 +38,9 @@ public class KingMovesCalculator implements PieceMovesCalculator {
 
         width= myPosition.getRow();
         height = myPosition.getColumn() ;
-        if (width > 1 && height < 8) {
-            width--;
-            height++;
+        if (width > 1 && height < 7) {
+            width -= 1;
+            height += 2;
             ChessPosition positionToCheck = new ChessPosition(width,height);
             if (board.getPiece(positionToCheck) == null) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
@@ -51,8 +52,9 @@ public class KingMovesCalculator implements PieceMovesCalculator {
 
         width= myPosition.getRow();
         height = myPosition.getColumn() ;
-        if (width > 1) {
-            width--;
+        if (width > 2 && height < 8) {
+            width -= 2;
+            height += 1;
             ChessPosition positionToCheck = new ChessPosition(width,height);
             if (board.getPiece(positionToCheck) == null) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
@@ -64,9 +66,9 @@ public class KingMovesCalculator implements PieceMovesCalculator {
 
         width= myPosition.getRow();
         height = myPosition.getColumn() ;
-        if (width > 1 && height > 1) {
-            width--;
-            height--;
+        if (width > 2 && height > 1) {
+            width -= 2;
+            height -= 1;
             ChessPosition positionToCheck = new ChessPosition(width,height);
             if (board.getPiece(positionToCheck) == null) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
@@ -78,8 +80,9 @@ public class KingMovesCalculator implements PieceMovesCalculator {
 
         width= myPosition.getRow();
         height = myPosition.getColumn() ;
-        if (height > 1) {
-            height--;
+        if (width > 1 && height > 2) {
+            width -= 1;
+            height -= 2;
             ChessPosition positionToCheck = new ChessPosition(width,height);
             if (board.getPiece(positionToCheck) == null) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
@@ -91,9 +94,9 @@ public class KingMovesCalculator implements PieceMovesCalculator {
 
         width= myPosition.getRow();
         height = myPosition.getColumn() ;
-        if (width < 8 && height > 1) {
-            width++;
-            height--;
+        if (width < 7 && height > 1) {
+            width += 2;
+            height -= 1;
             ChessPosition positionToCheck = new ChessPosition(width,height);
             if (board.getPiece(positionToCheck) == null) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
@@ -105,8 +108,9 @@ public class KingMovesCalculator implements PieceMovesCalculator {
 
         width= myPosition.getRow();
         height = myPosition.getColumn() ;
-        if (width < 8) {
-            width++;
+        if (width < 8 && height > 2) {
+            width += 1;
+            height -= 2;
             ChessPosition positionToCheck = new ChessPosition(width,height);
             if (board.getPiece(positionToCheck) == null) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
@@ -118,4 +122,5 @@ public class KingMovesCalculator implements PieceMovesCalculator {
         return moves;
     }
 }
+
 
