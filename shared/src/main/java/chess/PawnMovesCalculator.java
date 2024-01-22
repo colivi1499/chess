@@ -11,6 +11,16 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
         int width= myPosition.getRow();
         int height = myPosition.getColumn() ;
         if (board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE) {
+            if (myPosition.getRow() == 2) {
+                width +=2;
+                ChessPosition positionToCheck = new ChessPosition(width,height);
+                ChessPosition positionToCheck2 = new ChessPosition(width - 1, height);
+                if (board.getPiece(positionToCheck2) == null && board.getPiece(positionToCheck) == null) {
+                    moves.add(new ChessMove(myPosition,positionToCheck));
+                }
+            }
+            width= myPosition.getRow();
+            height = myPosition.getColumn();
             if (width < 8) {
                 width++;
                 ChessPosition positionToCheck = new ChessPosition(width,height);
@@ -20,7 +30,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
             }
 
             width= myPosition.getRow();
-            height = myPosition.getColumn() ;
+            height = myPosition.getColumn();
             if (height < 8 && width < 8) {
                 height++;
                 width++;
@@ -42,6 +52,18 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
             }
         }
         else {
+            if (myPosition.getRow() == 7) {
+                width -=2;
+                ChessPosition positionToCheck = new ChessPosition(width,height);
+                ChessPosition positionToCheck2 = new ChessPosition(width + 1, height);
+                if (board.getPiece(positionToCheck2) == null && board.getPiece(positionToCheck) == null) {
+                    moves.add(new ChessMove(myPosition,positionToCheck));
+                }
+            }
+
+            width= myPosition.getRow();
+            height = myPosition.getColumn();
+
             if (width > 1) {
                 width--;
                 ChessPosition positionToCheck = new ChessPosition(width,height);
