@@ -20,7 +20,27 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
                     moves.add(new ChessMove(myPosition,positionToCheck, ChessPiece.PieceType.BISHOP));
                     moves.add(new ChessMove(myPosition,positionToCheck, ChessPiece.PieceType.ROOK));
                 }
-            } else {
+                if (height < 8) {
+                    ChessPosition rightPosition = new ChessPosition(width,height+1);
+                    if (board.getPiece(rightPosition) != null && board.getPiece(rightPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                        moves.add(new ChessMove(myPosition,rightPosition, ChessPiece.PieceType.KNIGHT));
+                        moves.add(new ChessMove(myPosition,rightPosition, ChessPiece.PieceType.QUEEN));
+                        moves.add(new ChessMove(myPosition,rightPosition, ChessPiece.PieceType.BISHOP));
+                        moves.add(new ChessMove(myPosition,rightPosition, ChessPiece.PieceType.ROOK));
+                    }
+                }
+                if (height > 1) {
+                    ChessPosition leftPosition = new ChessPosition(width,height-1);
+                    if (board.getPiece(leftPosition) != null && board.getPiece(leftPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                        moves.add(new ChessMove(myPosition,leftPosition, ChessPiece.PieceType.KNIGHT));
+                        moves.add(new ChessMove(myPosition,leftPosition, ChessPiece.PieceType.QUEEN));
+                        moves.add(new ChessMove(myPosition,leftPosition, ChessPiece.PieceType.BISHOP));
+                        moves.add(new ChessMove(myPosition,leftPosition, ChessPiece.PieceType.ROOK));
+                    }
+                }
+
+            }
+            else {
                 if (myPosition.getRow() == 2) {
                     width += 2;
                     ChessPosition positionToCheck = new ChessPosition(width,height);
@@ -72,7 +92,26 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
                     moves.add(new ChessMove(myPosition,positionToCheck, ChessPiece.PieceType.BISHOP));
                     moves.add(new ChessMove(myPosition,positionToCheck, ChessPiece.PieceType.ROOK));
                 }
-            } else {
+                if (height < 8) {
+                    ChessPosition rightPosition = new ChessPosition(width,height+1);
+                    if (board.getPiece(rightPosition) != null && board.getPiece(rightPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                        moves.add(new ChessMove(myPosition,rightPosition, ChessPiece.PieceType.KNIGHT));
+                        moves.add(new ChessMove(myPosition,rightPosition, ChessPiece.PieceType.QUEEN));
+                        moves.add(new ChessMove(myPosition,rightPosition, ChessPiece.PieceType.BISHOP));
+                        moves.add(new ChessMove(myPosition,rightPosition, ChessPiece.PieceType.ROOK));
+                    }
+                }
+                if (height > 1) {
+                    ChessPosition leftPosition = new ChessPosition(width,height-1);
+                    if (board.getPiece(leftPosition) != null && board.getPiece(leftPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                        moves.add(new ChessMove(myPosition,leftPosition, ChessPiece.PieceType.KNIGHT));
+                        moves.add(new ChessMove(myPosition,leftPosition, ChessPiece.PieceType.QUEEN));
+                        moves.add(new ChessMove(myPosition,leftPosition, ChessPiece.PieceType.BISHOP));
+                        moves.add(new ChessMove(myPosition,leftPosition, ChessPiece.PieceType.ROOK));
+                    }
+                }
+            }
+            else {
                 if (myPosition.getRow() == 7) {
                     width -= 2;
                     ChessPosition positionToCheck = new ChessPosition(width,height);
@@ -117,7 +156,6 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
             }
 
         }
-
 
         return moves;
     }
