@@ -11,88 +11,111 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
         int width= myPosition.getRow();
         int height = myPosition.getColumn() ;
         if (board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE) {
-            if (myPosition.getRow() == 2) {
-                width +=2;
-                ChessPosition positionToCheck = new ChessPosition(width,height);
-                ChessPosition positionToCheck2 = new ChessPosition(width - 1, height);
-                if (board.getPiece(positionToCheck2) == null && board.getPiece(positionToCheck) == null) {
-                    moves.add(new ChessMove(myPosition,positionToCheck));
-                }
-            }
-            width= myPosition.getRow();
-            height = myPosition.getColumn();
-            if (width < 8) {
+            if (myPosition.getRow() == 7) {
                 width++;
                 ChessPosition positionToCheck = new ChessPosition(width,height);
                 if (board.getPiece(positionToCheck) == null) {
-                    moves.add(new ChessMove(myPosition,positionToCheck));
+                    moves.add(new ChessMove(myPosition,positionToCheck, ChessPiece.PieceType.KNIGHT));
+                    moves.add(new ChessMove(myPosition,positionToCheck, ChessPiece.PieceType.QUEEN));
+                    moves.add(new ChessMove(myPosition,positionToCheck, ChessPiece.PieceType.BISHOP));
+                    moves.add(new ChessMove(myPosition,positionToCheck, ChessPiece.PieceType.ROOK));
                 }
-            }
-
-            width= myPosition.getRow();
-            height = myPosition.getColumn();
-            if (height < 8 && width < 8) {
-                height++;
-                width++;
-                ChessPosition positionToCheck = new ChessPosition(width,height);
-                if (board.getPiece(positionToCheck) != null && board.getPiece(positionToCheck).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-                    moves.add(new ChessMove(myPosition,positionToCheck));
+            } else {
+                if (myPosition.getRow() == 2) {
+                    width += 2;
+                    ChessPosition positionToCheck = new ChessPosition(width,height);
+                    ChessPosition positionToCheck2 = new ChessPosition(width - 1, height);
+                    if (board.getPiece(positionToCheck2) == null && board.getPiece(positionToCheck) == null) {
+                        moves.add(new ChessMove(myPosition,positionToCheck));
+                    }
                 }
-            }
+                width= myPosition.getRow();
+                height = myPosition.getColumn();
+                if (width < 8) {
+                    width++;
+                    ChessPosition positionToCheck = new ChessPosition(width,height);
+                    if (board.getPiece(positionToCheck) == null) {
+                        moves.add(new ChessMove(myPosition,positionToCheck));
+                    }
+                }
 
-            width= myPosition.getRow();
-            height = myPosition.getColumn() ;
-            if (height > 1 && width < 8) {
-                height--;
-                width++;
-                ChessPosition positionToCheck = new ChessPosition(width,height);
-                if (board.getPiece(positionToCheck) != null && board.getPiece(positionToCheck).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-                    moves.add(new ChessMove(myPosition,positionToCheck));
+                width= myPosition.getRow();
+                height = myPosition.getColumn();
+                if (height < 8 && width < 8) {
+                    height++;
+                    width++;
+                    ChessPosition positionToCheck = new ChessPosition(width,height);
+                    if (board.getPiece(positionToCheck) != null && board.getPiece(positionToCheck).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                        moves.add(new ChessMove(myPosition,positionToCheck));
+                    }
+                }
+
+                width= myPosition.getRow();
+                height = myPosition.getColumn() ;
+                if (height > 1 && width < 8) {
+                    height--;
+                    width++;
+                    ChessPosition positionToCheck = new ChessPosition(width,height);
+                    if (board.getPiece(positionToCheck) != null && board.getPiece(positionToCheck).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                        moves.add(new ChessMove(myPosition,positionToCheck));
+                    }
                 }
             }
         }
         else {
-            if (myPosition.getRow() == 7) {
-                width -=2;
-                ChessPosition positionToCheck = new ChessPosition(width,height);
-                ChessPosition positionToCheck2 = new ChessPosition(width + 1, height);
-                if (board.getPiece(positionToCheck2) == null && board.getPiece(positionToCheck) == null) {
-                    moves.add(new ChessMove(myPosition,positionToCheck));
-                }
-            }
-
-            width= myPosition.getRow();
-            height = myPosition.getColumn();
-
-            if (width > 1) {
+            if (myPosition.getRow() == 2) {
                 width--;
                 ChessPosition positionToCheck = new ChessPosition(width,height);
                 if (board.getPiece(positionToCheck) == null) {
-                    moves.add(new ChessMove(myPosition,positionToCheck));
+                    moves.add(new ChessMove(myPosition,positionToCheck, ChessPiece.PieceType.KNIGHT));
+                    moves.add(new ChessMove(myPosition,positionToCheck, ChessPiece.PieceType.QUEEN));
+                    moves.add(new ChessMove(myPosition,positionToCheck, ChessPiece.PieceType.BISHOP));
+                    moves.add(new ChessMove(myPosition,positionToCheck, ChessPiece.PieceType.ROOK));
+                }
+            } else {
+                if (myPosition.getRow() == 7) {
+                    width -= 2;
+                    ChessPosition positionToCheck = new ChessPosition(width,height);
+                    ChessPosition positionToCheck2 = new ChessPosition(width + 1, height);
+                    if (board.getPiece(positionToCheck2) == null && board.getPiece(positionToCheck) == null) {
+                        moves.add(new ChessMove(myPosition,positionToCheck));
+                    }
+                }
+
+                width= myPosition.getRow();
+                height = myPosition.getColumn();
+
+                if (width > 1) {
+                    width--;
+                    ChessPosition positionToCheck = new ChessPosition(width,height);
+                    if (board.getPiece(positionToCheck) == null) {
+                        moves.add(new ChessMove(myPosition,positionToCheck));
+                    }
+                }
+
+                width= myPosition.getRow();
+                height = myPosition.getColumn() ;
+                if (height < 8 && width > 1) {
+                    height++;
+                    width--;
+                    ChessPosition positionToCheck = new ChessPosition(width,height);
+                    if (board.getPiece(positionToCheck) != null && board.getPiece(positionToCheck).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                        moves.add(new ChessMove(myPosition,positionToCheck));
+                    }
+                }
+
+                width= myPosition.getRow();
+                height = myPosition.getColumn() ;
+                if (height > 1 && width > 1) {
+                    height--;
+                    width--;
+                    ChessPosition positionToCheck = new ChessPosition(width,height);
+                    if (board.getPiece(positionToCheck) != null && board.getPiece(positionToCheck).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                        moves.add(new ChessMove(myPosition,positionToCheck));
+                    }
                 }
             }
 
-            width= myPosition.getRow();
-            height = myPosition.getColumn() ;
-            if (height < 8 && width > 1) {
-                height++;
-                width--;
-                ChessPosition positionToCheck = new ChessPosition(width,height);
-                if (board.getPiece(positionToCheck) != null && board.getPiece(positionToCheck).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-                    moves.add(new ChessMove(myPosition,positionToCheck));
-                }
-            }
-
-            width= myPosition.getRow();
-            height = myPosition.getColumn() ;
-            if (height > 1 && width > 1) {
-                height--;
-                width--;
-                ChessPosition positionToCheck = new ChessPosition(width,height);
-                if (board.getPiece(positionToCheck) != null && board.getPiece(positionToCheck).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-                    moves.add(new ChessMove(myPosition,positionToCheck));
-                }
-            }
         }
 
 
