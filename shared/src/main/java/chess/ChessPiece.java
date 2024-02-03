@@ -55,28 +55,32 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
-        switch (type) {
-
-            case KING:
+        return switch (type) {
+            case KING -> {
                 KingMovesCalculator kingCalculator = new KingMovesCalculator();
-                return kingCalculator.pieceMoves(board,myPosition);
-            case QUEEN:
+                yield kingCalculator.pieceMoves(board, myPosition);
+            }
+            case QUEEN -> {
                 QueenMovesCalculator queenCalculator = new QueenMovesCalculator();
-                return queenCalculator.pieceMoves(board,myPosition);
-            case ROOK:
+                yield queenCalculator.pieceMoves(board, myPosition);
+            }
+            case ROOK -> {
                 RookMovesCalculator rookCalculator = new RookMovesCalculator();
-                return rookCalculator.pieceMoves(board,myPosition);
-            case BISHOP:
+                yield rookCalculator.pieceMoves(board, myPosition);
+            }
+            case BISHOP -> {
                 BishopMovesCalculator bishopCalculator = new BishopMovesCalculator();
-                return bishopCalculator.pieceMoves(board,myPosition);
-            case KNIGHT:
+                yield bishopCalculator.pieceMoves(board, myPosition);
+            }
+            case KNIGHT -> {
                 KnightMovesCalculator knightCalculator = new KnightMovesCalculator();
-                return knightCalculator.pieceMoves(board,myPosition);
-            case PAWN:
+                yield knightCalculator.pieceMoves(board, myPosition);
+            }
+            case PAWN -> {
                 PawnMovesCalculator pawnCalculator = new PawnMovesCalculator();
-                return pawnCalculator.pieceMoves(board,myPosition);
+                yield pawnCalculator.pieceMoves(board, myPosition);
+            }
         };
-        return moves;
     }
 
     @Override
