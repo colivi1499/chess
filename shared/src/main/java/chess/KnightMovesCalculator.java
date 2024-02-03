@@ -1,19 +1,17 @@
 package chess;
 
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class KnightMovesCalculator implements PieceMovesCalculator {
-
-    @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
-        int width= myPosition.getRow();
-        int height = myPosition.getColumn() ;
-        if (width < 7 && height < 8) {
-            width += 2;
-            height += 1;
-            ChessPosition positionToCheck = new ChessPosition(width,height);
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+        if (row < 7 && col < 8) {
+            row += 2;
+            col++;
+            ChessPosition positionToCheck = new ChessPosition(row,col);
             if (board.getPiece(positionToCheck) == null) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
             }
@@ -22,12 +20,12 @@ public class KnightMovesCalculator implements PieceMovesCalculator {
             }
         }
 
-        width= myPosition.getRow();
-        height = myPosition.getColumn() ;
-        if (width < 8 && height < 7) {
-            width += 1;
-            height += 2;
-            ChessPosition positionToCheck = new ChessPosition(width,height);
+        row = myPosition.getRow();
+        col = myPosition.getColumn();
+        if (row < 8 && col < 7) {
+            row++;
+            col += 2;
+            ChessPosition positionToCheck = new ChessPosition(row,col);
             if (board.getPiece(positionToCheck) == null) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
             }
@@ -36,12 +34,12 @@ public class KnightMovesCalculator implements PieceMovesCalculator {
             }
         }
 
-        width= myPosition.getRow();
-        height = myPosition.getColumn() ;
-        if (width > 1 && height < 7) {
-            width -= 1;
-            height += 2;
-            ChessPosition positionToCheck = new ChessPosition(width,height);
+        row = myPosition.getRow();
+        col = myPosition.getColumn();
+        if (row > 1 && col < 7) {
+            row--;
+            col += 2;
+            ChessPosition positionToCheck = new ChessPosition(row,col);
             if (board.getPiece(positionToCheck) == null) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
             }
@@ -50,12 +48,12 @@ public class KnightMovesCalculator implements PieceMovesCalculator {
             }
         }
 
-        width= myPosition.getRow();
-        height = myPosition.getColumn() ;
-        if (width > 2 && height < 8) {
-            width -= 2;
-            height += 1;
-            ChessPosition positionToCheck = new ChessPosition(width,height);
+        row = myPosition.getRow();
+        col = myPosition.getColumn();
+        if (row > 2 && col < 8) {
+            row -= 2;
+            col++;
+            ChessPosition positionToCheck = new ChessPosition(row,col);
             if (board.getPiece(positionToCheck) == null) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
             }
@@ -64,12 +62,12 @@ public class KnightMovesCalculator implements PieceMovesCalculator {
             }
         }
 
-        width= myPosition.getRow();
-        height = myPosition.getColumn() ;
-        if (width > 2 && height > 1) {
-            width -= 2;
-            height -= 1;
-            ChessPosition positionToCheck = new ChessPosition(width,height);
+        row = myPosition.getRow();
+        col = myPosition.getColumn();
+        if (row > 2 && col > 1) {
+            row -= 2;
+            col--;
+            ChessPosition positionToCheck = new ChessPosition(row,col);
             if (board.getPiece(positionToCheck) == null) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
             }
@@ -78,12 +76,12 @@ public class KnightMovesCalculator implements PieceMovesCalculator {
             }
         }
 
-        width= myPosition.getRow();
-        height = myPosition.getColumn() ;
-        if (width > 1 && height > 2) {
-            width -= 1;
-            height -= 2;
-            ChessPosition positionToCheck = new ChessPosition(width,height);
+        row = myPosition.getRow();
+        col = myPosition.getColumn();
+        if (row > 1 && col > 2) {
+            row--;
+            col -= 2;
+            ChessPosition positionToCheck = new ChessPosition(row,col);
             if (board.getPiece(positionToCheck) == null) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
             }
@@ -92,12 +90,12 @@ public class KnightMovesCalculator implements PieceMovesCalculator {
             }
         }
 
-        width= myPosition.getRow();
-        height = myPosition.getColumn() ;
-        if (width < 7 && height > 1) {
-            width += 2;
-            height -= 1;
-            ChessPosition positionToCheck = new ChessPosition(width,height);
+        row = myPosition.getRow();
+        col = myPosition.getColumn();
+        if (row < 8 && col > 2) {
+            row++;
+            col -= 2;
+            ChessPosition positionToCheck = new ChessPosition(row,col);
             if (board.getPiece(positionToCheck) == null) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
             }
@@ -106,12 +104,12 @@ public class KnightMovesCalculator implements PieceMovesCalculator {
             }
         }
 
-        width= myPosition.getRow();
-        height = myPosition.getColumn() ;
-        if (width < 8 && height > 2) {
-            width += 1;
-            height -= 2;
-            ChessPosition positionToCheck = new ChessPosition(width,height);
+        row = myPosition.getRow();
+        col = myPosition.getColumn();
+        if (row < 7 && col > 1) {
+            row += 2;
+            col--;
+            ChessPosition positionToCheck = new ChessPosition(row,col);
             if (board.getPiece(positionToCheck) == null) {
                 moves.add(new ChessMove(myPosition,positionToCheck));
             }
@@ -119,8 +117,7 @@ public class KnightMovesCalculator implements PieceMovesCalculator {
                 moves.add(new ChessMove(myPosition,positionToCheck));
             }
         }
+
         return moves;
     }
 }
-
-
