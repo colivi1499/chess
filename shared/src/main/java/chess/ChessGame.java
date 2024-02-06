@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -11,10 +12,14 @@ import java.util.Collection;
 public class ChessGame {
 
     private TeamColor teamTurn = TeamColor.WHITE;
-    private ChessBoard board = new ChessBoard();
+    private ChessBoard board;
 
     public ChessGame() {
+        this(new ChessBoard());
+    }
 
+    public ChessGame(ChessBoard board) {
+        this.board = board;
     }
 
     /**
@@ -49,7 +54,13 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        return board.getPiece(startPosition).pieceMoves(board,startPosition);
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        for (ChessMove move : board.getPiece(startPosition).pieceMoves(board,startPosition)) {
+            if (!move(board,move).isInCheck(board.getPiece(startPosition).getTeamColor())) {
+                validMoves.add(move);
+            }
+        }
+        return validMoves;
     }
 
     /**
@@ -60,6 +71,17 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         //throw new RuntimeException("Not implemented");
+    }
+
+    /**
+     * Makes a move in a chess game without checking for checks
+     *
+     * @param move chess move to preform
+     * @return board after move has been made
+     */
+    public ChessGame move(ChessBoard board, ChessMove move) {
+        board.addPiece(move.getEndPosition(),board.getPiece(move.getStartPosition()));
+        return new ChessGame(board);
     }
 
     /**
