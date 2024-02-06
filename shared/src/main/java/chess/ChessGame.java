@@ -9,7 +9,7 @@ import java.util.Collection;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessGame {
+public class ChessGame{
 
     private TeamColor teamTurn = TeamColor.WHITE;
     private ChessBoard board;
@@ -38,6 +38,7 @@ public class ChessGame {
         this.teamTurn = team;
     }
 
+
     /**
      * Enum identifying the 2 possible teams in a chess game
      */
@@ -55,10 +56,18 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         Collection<ChessMove> validMoves = new ArrayList<>();
+        if (board.getPiece(startPosition) == null) {
+            return validMoves;
+        }
+        TeamColor color = board.getPiece(startPosition).getTeamColor();
+        ChessBoard newBoard = (ChessBoard) board.clone();
         for (ChessMove move : board.getPiece(startPosition).pieceMoves(board,startPosition)) {
-            if (!move(board,move).isInCheck(board.getPiece(startPosition).getTeamColor())) {
+            newBoard = (ChessBoard) board.clone();
+
+            if (!new ChessGame(newBoard).movePiece(newBoard,move).isInCheck(color)) {
                 validMoves.add(move);
             }
+
         }
         return validMoves;
     }
@@ -79,8 +88,9 @@ public class ChessGame {
      * @param move chess move to preform
      * @return board after move has been made
      */
-    public ChessGame move(ChessBoard board, ChessMove move) {
+    public ChessGame movePiece(ChessBoard board, ChessMove move) {
         board.addPiece(move.getEndPosition(),board.getPiece(move.getStartPosition()));
+        board.removePiece(move.getStartPosition());
         return new ChessGame(board);
     }
 
@@ -92,13 +102,13 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         ChessPosition king = null;
+        ChessPosition positionToCheck;
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
-                ChessPosition positionToCheck = new ChessPosition(i,j);
-                if (board.getPiece(positionToCheck) != null && board.getPiece(positionToCheck).getTeamColor() == teamColor) {
-                    if (board.getPiece(positionToCheck).getPieceType() == ChessPiece.PieceType.KING) {
+                positionToCheck = new ChessPosition(i,j);
+                if (board.getPiece(positionToCheck) != null && board.getPiece(positionToCheck).getTeamColor().equals(teamColor)) {
+                    if (board.getPiece(positionToCheck).getPieceType().equals(ChessPiece.PieceType.KING)) {
                         king = positionToCheck;
-                        break;
                     }
                 }
             }
@@ -106,7 +116,7 @@ public class ChessGame {
 
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
-                ChessPosition positionToCheck = new ChessPosition(i,j);
+                positionToCheck = new ChessPosition(i,j);
                 if (board.getPiece(positionToCheck) != null && board.getPiece(positionToCheck).getTeamColor() != teamColor) {
                     for (ChessMove move : board.getPiece(positionToCheck).pieceMoves(board,positionToCheck)) {
                         if (move.getEndPosition().equals(king)){
@@ -156,5 +166,13 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         return board;
+    }
+
+    @Override
+    public String toString() {
+        return "ChessGame{" +
+                "teamTurn=" + teamTurn +
+                ", board=" + board +
+                '}';
     }
 }

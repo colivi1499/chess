@@ -8,7 +8,7 @@ import java.util.Arrays;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessBoard {
+public class ChessBoard implements Cloneable {
 
     private ChessPiece[][] board = new ChessPiece[8][8];
     public ChessBoard() {
@@ -23,6 +23,15 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         board[position.getRow() - 1][position.getColumn() - 1] = piece;
+    }
+
+    /**
+     * Removes a chess piece from the chessboard
+     *
+     * @param position where to remove the piece from
+     */
+    public void removePiece(ChessPosition position) {
+        board[position.getRow() - 1][position.getColumn() - 1] = null;
     }
 
     /**
@@ -86,7 +95,7 @@ public class ChessBoard {
     public String toString() {
         String str = "";
         for (int i = 0; i < 8; i++) {
-            str += Arrays.toString(board[i]);
+            str += Arrays.toString(board[i]) + "\n";
         }
         return "ChessBoard{" +
                 "board=" + str +
@@ -104,5 +113,17 @@ public class ChessBoard {
     @Override
     public int hashCode() {
         return Arrays.hashCode(board);
+    }
+
+    @Override
+    public ChessBoard clone() {
+        ChessBoard clone = new ChessBoard();
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                clone.board[i][j] = this.board[i][j];
+            }
+        }
+        // TODO: copy mutable state here, so the clone can't change the internals of the original
+        return clone;
     }
 }
