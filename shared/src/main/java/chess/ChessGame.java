@@ -60,14 +60,12 @@ public class ChessGame{
             return validMoves;
         }
         TeamColor color = board.getPiece(startPosition).getTeamColor();
-        ChessBoard newBoard = (ChessBoard) board.clone();
+        ChessBoard newBoard;
         for (ChessMove move : board.getPiece(startPosition).pieceMoves(board,startPosition)) {
-            newBoard = (ChessBoard) board.clone();
-
+            newBoard = board.clone();
             if (!new ChessGame(newBoard).movePiece(newBoard,move).isInCheck(color)) {
                 validMoves.add(move);
             }
-
         }
         return validMoves;
     }
