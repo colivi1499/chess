@@ -14,12 +14,24 @@ public class ChessGame{
     private TeamColor teamTurn = TeamColor.WHITE;
     private ChessBoard board;
 
+    private boolean whiteKingMoved = false;
+    private boolean whiteRookRightMoved = false;
+    private boolean whiteRookLeftMoved = false;
+    private boolean blackKingMoved = false;
+    private boolean blackRookRightMoved = false;
+    private boolean blackRookLeftMoved = false;
+
+
     public ChessGame() {
         this(new ChessBoard());
     }
 
     public ChessGame(ChessBoard board) {
         this.board = board;
+        if (board.getPiece(new ChessPosition(1,5)) != null)
+            whiteKingMoved = !(board.getPiece(new ChessPosition(1,5)).equals(new ChessPiece(TeamColor.WHITE, ChessPiece.PieceType.KING)));
+        if (board.getPiece(new ChessPosition(1,8)) != null)
+            whiteRookRightMoved = !(board.getPiece(new ChessPosition(1,8)).equals(new ChessPiece(TeamColor.WHITE, ChessPiece.PieceType.ROOK)));
     }
 
     /**
@@ -67,6 +79,34 @@ public class ChessGame{
                 validMoves.add(move);
             }
         }
+
+        if (startPosition.equals(new ChessPosition(1,5))) {
+            if (!whiteKingMoved && board.getPiece(startPosition).equals(new ChessPiece(TeamColor.WHITE, ChessPiece.PieceType.KING))) {
+                if (!whiteRookRightMoved && board.getPiece(new ChessPosition(1,6)) == null && board.getPiece(new ChessPosition(1,7)) == null) {
+                    if (!isInCheck(TeamColor.WHITE)) {
+                        ChessPosition position;
+                        boolean moveThroughCheck = false;
+                        for (int i = 1; i <= 8; i++) {
+                            for (int j = 1; j <= 8; j++) {
+                                position = new ChessPosition(i,j);
+                                if (board.getPiece(position) != null && board.getPiece(position).getTeamColor() == TeamColor.BLACK) {
+                                    for (ChessMove move : board.getPiece(position).pieceMoves(board,position)) {
+                                        if (move.getEndPosition().equals(new ChessPosition(1, 6)) || move.getEndPosition().equals(new ChessPosition(1, 7))) {
+                                            moveThroughCheck = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (!moveThroughCheck) {
+                            validMoves.add(new ChessMove(new ChessPosition(1,5),new ChessPosition(1,7)));
+                        }
+                    }
+                }
+            }
+        }
+
         return validMoves;
     }
 
@@ -82,6 +122,19 @@ public class ChessGame{
                 board.addPiece(move.getEndPosition(),new ChessPiece(getTeamTurn(),move.getPromotionPiece()));
             } else {
                 board.addPiece(move.getEndPosition(),board.getPiece(move.getStartPosition()));
+                if (board.getPiece(move.getEndPosition()).equals(new ChessPiece(TeamColor.WHITE, ChessPiece.PieceType.KING))) {
+                    whiteKingMoved = true;
+                    if (move.equals(new ChessMove(new ChessPosition(1,5),new ChessPosition(1,7),null))) {
+                        board.addPiece(new ChessPosition(1,6),new ChessPiece(TeamColor.WHITE, ChessPiece.PieceType.ROOK));
+                        board.removePiece(new ChessPosition(1,8));
+                    }
+                }
+                if (board.getPiece(move.getEndPosition()).equals(new ChessPiece(TeamColor.WHITE, ChessPiece.PieceType.ROOK))) {
+                    if (move.getStartPosition().equals(new ChessPosition(1,8)))
+                        whiteRookRightMoved = true;
+                    if (move.getStartPosition().equals(new ChessPosition(1,1)))
+                        whiteRookLeftMoved = true;
+                }
             }
             board.removePiece(move.getStartPosition());
             if (getTeamTurn() == TeamColor.WHITE) {
@@ -187,6 +240,10 @@ public class ChessGame{
      */
     public void setBoard(ChessBoard board) {
         this.board = board;
+        if (board.getPiece(new ChessPosition(1,5)) != null)
+            whiteKingMoved = !(board.getPiece(new ChessPosition(1,5)).equals(new ChessPiece(TeamColor.WHITE, ChessPiece.PieceType.KING)));
+        if (board.getPiece(new ChessPosition(1,8)) != null)
+            whiteRookRightMoved = !(board.getPiece(new ChessPosition(1,8)).equals(new ChessPiece(TeamColor.WHITE, ChessPiece.PieceType.ROOK)));
     }
 
     /**
