@@ -2,15 +2,10 @@ package dataAccess;
 
 import model.UserData;
 
-public class UserDAO {
-    private void createUser(String username, String password) {
-    }
+public interface UserDAO {
+    void createUser(String username, String password);
 
-    private UserData getUser(String username) {
-        return new UserData("","", "");
-    }
+    UserData getUser(String username);
 
-    private void clear() {
-
-    }
+    void clear();
 }

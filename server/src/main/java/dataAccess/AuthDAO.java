@@ -2,17 +2,11 @@ package dataAccess;
 
 import model.AuthData;
 
-public class AuthDAO {
+public interface AuthDAO {
 
-    private void createAuth(String username, String password) {
+    void createAuth(String username, String password);
 
-    }
+    AuthData getAuth(String username);
 
-    private AuthData getAuth(String username) {
-        return new AuthData("","");
-    }
-
-    private void deleteAuth(String authToken, String username) {
-
-    }
+    void deleteAuth(String authToken, String username);
 }
