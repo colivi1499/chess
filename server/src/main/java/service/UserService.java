@@ -1,5 +1,6 @@
 package service;
 
+import com.google.gson.Gson;
 import model.AuthData;
 import model.UserData;
 
@@ -15,4 +16,5 @@ public class UserService {
     public void logout(UserData user) {
 
     }
+
 }
