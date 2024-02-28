@@ -2,7 +2,6 @@ package dataAccess;
 
 import model.UserData;
 
-import javax.xml.crypto.Data;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,12 +9,12 @@ public class MemoryUserDAO implements UserDAO {
 
     Map<String, UserData> userTable = new HashMap<>();
     @Override
-    public void createUser(String username, String password, String email) throws DataAccessException {
+    public void createUser(UserData user) throws DataAccessException {
         try {
-            if (userTable.containsKey(username)) {
+            if (userTable.containsKey(user.username())) {
                 throw new DataAccessException("Username already exists");
             }
-            userTable.put(username, new UserData(username,password,email));
+            userTable.put(user.username(), user);
         } catch (DataAccessException e) {
             System.out.println(e);
         }

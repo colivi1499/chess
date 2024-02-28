@@ -10,12 +10,12 @@ public class MemoryGameDAO implements GameDAO {
     private Map<Integer, GameData> chessGames = new HashMap<>();
 
     @Override
-    public void createGame(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game) throws DataAccessException {
+    public void createGame(GameData game) throws DataAccessException {
         try {
-            if (chessGames.containsKey(gameID)) {
+            if (chessGames.containsKey(game.gameID())) {
                 throw new DataAccessException("gameID already taken");
             }
-            chessGames.put(gameID, new GameData(gameID, whiteUsername, blackUsername, gameName, game));
+            chessGames.put(game.gameID(), game);
         } catch (DataAccessException e) {
             System.out.println(e);
         }
@@ -40,7 +40,14 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public void updateGame(ChessGame newGame) {
-
+    public void updateGame(int gameID, GameData newGame) throws DataAccessException {
+        try {
+            if (!chessGames.containsKey(gameID)) {
+                throw new DataAccessException("Invalid gameID");
+            }
+            chessGames.replace(gameID,newGame);
+        } catch (DataAccessException e) {
+            System.out.println(e);
+        }
     }
 }

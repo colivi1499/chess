@@ -19,6 +19,6 @@ class MemoryUserDAOTest {
     void createUser() {
         //UserData user = new UserData("user1","something","something@gmail.com");
         //userDAO.createUser("user1","something","something@gmail.com");
-        //Assertions.assertEquals(1,1);
+        Assertions.assertEquals(0,1);
     }
 }

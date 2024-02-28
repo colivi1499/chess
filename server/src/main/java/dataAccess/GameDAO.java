@@ -9,11 +9,11 @@ import java.util.Map;
 public interface GameDAO {
 
 
-    void createGame(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game);
+    void createGame(GameData data) throws DataAccessException;
 
     GameData getGame(int gameID) throws DataAccessException;
 
     Map<Integer,GameData> listGames();
 
-    void updateGame(ChessGame newGame);
+    void updateGame(int gameID, GameData newGame) throws DataAccessException;
 }
