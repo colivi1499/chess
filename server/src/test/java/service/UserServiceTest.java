@@ -1,21 +1,29 @@
 package service;
 
+import chess.ChessBoard;
+import chess.ChessGame;
 import dataAccess.DataAccessException;
 import dataAccess.MemoryAuthDAO;
+import dataAccess.MemoryGameDAO;
 import dataAccess.MemoryUserDAO;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserServiceTest {
     MemoryUserDAO userDAO = new MemoryUserDAO();
+    MemoryGameDAO gameDAO = new MemoryGameDAO();
     AuthService authService = new AuthService();
-    UserService userService = new UserService(userDAO,authService);
+    GameService gameService = new GameService(gameDAO);
+    UserService userService = new UserService(userDAO,authService,gameService);
+
+    @BeforeEach
+    void setUp() {
+        userService.clear();
+    }
 
     @Test
     @Order(0)
@@ -40,13 +48,24 @@ class UserServiceTest {
 
     @Test
     @Order(2)
-    @DisplayName("Login")
-    void login() throws DataAccessException {
+    @DisplayName("Login and logout")
+    void loginAndOut() throws DataAccessException {
         userService.register(new UserData("Name","something","cameron@schoeny.com"));
         userService.logout(new UserData("Name", "something", "cameron@schoeny.com"));
         assertEquals(1,userDAO.userTable.size());
         userService.login(new UserData("Name","something","cameron@schoeny.com"));
         assertEquals(1,userDAO.userTable.size());
         assertTrue(userDAO.userTable.containsKey("Name"));
+        assertEquals(1, MemoryAuthDAO.authTable.size());
+        userService.logout(new UserData("Name", "something","cameron@schoeny.com"));
+        assertEquals(0, MemoryAuthDAO.authTable.size());
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("Join game")
+    void joinGame() {
+        ChessGame game1 = new ChessGame(new ChessBoard());
+        //userService.gameService.createGame();
     }
 }

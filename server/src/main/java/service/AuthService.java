@@ -23,4 +23,8 @@ public class AuthService {
         byte[] bytes = Base64.getEncoder().encode(token.getBytes(StandardCharsets.UTF_8));
         return new String(bytes,StandardCharsets.UTF_8);
     }
+
+    public void clear() {
+        authDAO.clear();
+    }
 }

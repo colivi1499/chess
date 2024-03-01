@@ -2,23 +2,21 @@ package dataAccess;
 
 import chess.ChessGame;
 import model.GameData;
+import model.UserData;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class MemoryGameDAO implements GameDAO {
     private Map<Integer, GameData> chessGames = new HashMap<>();
+    private MemoryAuthDAO authDAO = new MemoryAuthDAO();
 
     @Override
-    public void createGame(GameData game) {
-        try {
-            if (chessGames.containsKey(game.gameID())) {
-                throw new DataAccessException("gameID already taken");
+    public void createGame(String gameName, String authToken, UserData user) {
+            if (authDAO.getAuth(authToken) != null) {
+                int gameID = generateGameID(gameName);
+                chessGames.put(gameID, new GameData(gameID,null,null,gameName,new ChessGame()));
             }
-            chessGames.put(game.gameID(), game);
-        } catch (DataAccessException e) {
-            System.out.println(e);
-        }
     }
 
     @Override
@@ -49,5 +47,14 @@ public class MemoryGameDAO implements GameDAO {
         } catch (DataAccessException e) {
             System.out.println(e);
         }
+    }
+
+    public void clear() {
+        chessGames.clear();
+    }
+
+    private int generateGameID(String gameName) {
+        String id = gameName + System.currentTimeMillis();
+        return id.hashCode();
     }
 }

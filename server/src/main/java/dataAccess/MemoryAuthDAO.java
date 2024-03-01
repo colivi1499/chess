@@ -6,8 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MemoryAuthDAO implements AuthDAO {
-
-    public Map<String,AuthData> authTable = new HashMap<>();
+    public static Map<String,AuthData> authTable = new HashMap<>();
     @Override
     public void createAuth(AuthData auth) {
         try {
@@ -59,5 +58,9 @@ public class MemoryAuthDAO implements AuthDAO {
         } catch (DataAccessException e) {
             System.out.println(e);
         }
+    }
+
+    public void clear() {
+        authTable.clear();
     }
 }

@@ -2,6 +2,7 @@ package dataAccess;
 
 import chess.ChessGame;
 import model.GameData;
+import model.UserData;
 
 import java.util.Collection;
 import java.util.Map;
@@ -9,7 +10,8 @@ import java.util.Map;
 public interface GameDAO {
 
 
-    void createGame(GameData data) throws DataAccessException;
+
+    void createGame(String gameName, String authToken, UserData user);
 
     GameData getGame(int gameID) throws DataAccessException;
 

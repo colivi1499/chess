@@ -3,6 +3,7 @@ package service;
 import dataAccess.MemoryGameDAO;
 import dataAccess.MemoryUserDAO;
 import model.GameData;
+import model.UserData;
 
 import java.util.Collection;
 
@@ -13,8 +14,8 @@ public class GameService {
         GameService.gameDAO = gameDAO;
     }
 
-    public void createGame(GameData game) {
-        gameDAO.createGame(game);
+    public void createGame(String gameName, String authToken, UserData user) {
+        gameDAO.createGame(gameName,authToken,user);
     }
 
     public Collection<GameData> listGames() {
@@ -27,6 +28,10 @@ public class GameService {
 
     public void updateGame(int gameID, GameData newGame) {
         gameDAO.updateGame(gameID,newGame);
+    }
+
+    public void clear() {
+        gameDAO.clear();
     }
 
 }
