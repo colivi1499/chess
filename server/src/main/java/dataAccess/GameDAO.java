@@ -11,7 +11,7 @@ public interface GameDAO {
 
 
 
-    void createGame(String gameName, String authToken, UserData user);
+    void createGame(String gameName, String authToken);
 
     GameData getGame(int gameID) throws DataAccessException;
 

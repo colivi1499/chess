@@ -63,9 +63,31 @@ class UserServiceTest {
 
     @Test
     @Order(3)
+    @DisplayName("Create game")
+    void createGame() {
+        userService.register(new UserData("Name","something","cameron@schoeny.com"));
+        userService.gameService.createGame("Game1",authService.authDAO.getAuthFromUsername("Name").authToken());
+        System.out.println(userService.gameService.listGames());
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("Get game")
+    void getGame() {
+        userService.register(new UserData("Name","something","cameron@schoeny.com"));
+        userService.gameService.createGame("Game1",authService.authDAO.getAuthFromUsername("Name").authToken());
+        System.out.println(userService.gameService.getGame(gameDAO.getID("Game1")));
+    }
+
+    @Test
+    @Order(5)
     @DisplayName("Join game")
     void joinGame() {
-        ChessGame game1 = new ChessGame(new ChessBoard());
-        //userService.gameService.createGame();
+        userService.register(new UserData("Name","something","cameron@schoeny.com"));
+        userService.gameService.createGame("Game1",authService.authDAO.getAuthFromUsername("Name").authToken());
+        userService.joinGame(ChessGame.TeamColor.WHITE,gameDAO.getID("Game1"),authService.authDAO.getAuthFromUsername("Name").authToken(),"Name");
+        userService.register(new UserData("Name2","something","cameron@schoeny.com"));
+        userService.joinGame(ChessGame.TeamColor.BLACK,gameDAO.getID("Game1"),authService.authDAO.getAuthFromUsername("Name2").authToken(),"Name2");
+        System.out.println(userService.gameService.getGame(gameDAO.getID("Game1")));
     }
 }

@@ -1,6 +1,7 @@
 package dataAccess;
 
 import chess.ChessGame;
+import model.AuthData;
 import model.GameData;
 import model.UserData;
 
@@ -8,16 +9,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MemoryGameDAO implements GameDAO {
-    private Map<Integer, GameData> chessGames = new HashMap<>();
-    private MemoryAuthDAO authDAO = new MemoryAuthDAO();
+    private static Map<Integer, GameData> chessGames = new HashMap<>();
+    private static MemoryAuthDAO authDAO = new MemoryAuthDAO();
 
     @Override
-    public void createGame(String gameName, String authToken, UserData user) {
+    public void createGame(String gameName, String authToken) {
             if (authDAO.getAuth(authToken) != null) {
                 int gameID = generateGameID(gameName);
                 chessGames.put(gameID, new GameData(gameID,null,null,gameName,new ChessGame()));
             }
     }
+
 
     @Override
     public GameData getGame(int gameID) {
@@ -56,5 +58,19 @@ public class MemoryGameDAO implements GameDAO {
     private int generateGameID(String gameName) {
         String id = gameName + System.currentTimeMillis();
         return id.hashCode();
+    }
+
+    public int getID(String gameName) {
+        try {
+            for (GameData gameData : chessGames.values()) {
+                if (gameData.gameName().equals(gameName)) {
+                    return gameData.gameID();
+                }
+            }
+            throw new DataAccessException("Invalid gameName " + gameName);
+        } catch (DataAccessException e) {
+            System.out.println(e);
+            return 0;
+        }
     }
 }

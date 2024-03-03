@@ -44,6 +44,8 @@ public class MemoryUserDAO implements UserDAO {
         userTable.remove(username);
     }
 
+
+
     @Override
     public void clear() {
         userTable.clear();

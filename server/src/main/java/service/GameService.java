@@ -14,8 +14,8 @@ public class GameService {
         GameService.gameDAO = gameDAO;
     }
 
-    public void createGame(String gameName, String authToken, UserData user) {
-        gameDAO.createGame(gameName,authToken,user);
+    public void createGame(String gameName, String authToken) {
+        gameDAO.createGame(gameName,authToken);
     }
 
     public Collection<GameData> listGames() {
