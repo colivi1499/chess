@@ -10,6 +10,10 @@ import java.util.Collection;
 public class GameService {
     static MemoryGameDAO gameDAO;
 
+    public GameService() {
+        this(new MemoryGameDAO());
+    }
+
     public GameService(MemoryGameDAO gameDAO) {
         GameService.gameDAO = gameDAO;
     }

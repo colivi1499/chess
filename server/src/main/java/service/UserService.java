@@ -15,6 +15,11 @@ public class UserService {
     MemoryUserDAO userDAO;
     AuthService authService;
     GameService gameService;
+
+    public UserService() {
+        this(new MemoryUserDAO(), new AuthService(), new GameService());
+    }
+
     public UserService(MemoryUserDAO userDAO, AuthService authService, GameService gameService) {
         this.userDAO = userDAO;
         this.authService = authService;
