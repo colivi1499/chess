@@ -51,13 +51,13 @@ class UserServiceTest {
     @DisplayName("Login and logout")
     void loginAndOut() throws DataAccessException {
         userService.register(new UserData("Name","something","cameron@schoeny.com"));
-        userService.logout(new UserData("Name", "something", "cameron@schoeny.com"));
+        userService.logout(userService.getAuthToken("Name"));
         assertEquals(1,userDAO.userTable.size());
         userService.login(new UserData("Name","something","cameron@schoeny.com"));
         assertEquals(1,userDAO.userTable.size());
         assertTrue(userDAO.userTable.containsKey("Name"));
         assertEquals(1, MemoryAuthDAO.authTable.size());
-        userService.logout(new UserData("Name", "something","cameron@schoeny.com"));
+        userService.logout(userService.getAuthToken("Name"));
         assertEquals(0, MemoryAuthDAO.authTable.size());
     }
 

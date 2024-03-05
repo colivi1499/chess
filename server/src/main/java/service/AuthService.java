@@ -10,12 +10,12 @@ import java.util.Base64;
 public class AuthService {
     MemoryAuthDAO authDAO = new MemoryAuthDAO();
     public AuthData createAuth(String username) throws DataAccessException {
-        AuthData auth = new AuthData(generateAuthToken(username),username);
+        AuthData auth = new AuthData(username, generateAuthToken(username));
         authDAO.createAuth(auth);
         return authDAO.getAuth(auth.authToken());
     }
 
-    public void deleteAuth(String authToken) {
+    public void deleteAuth(String authToken) throws DataAccessException {
         authDAO.deleteAuth(authToken);
     }
     private String generateAuthToken(String username) {

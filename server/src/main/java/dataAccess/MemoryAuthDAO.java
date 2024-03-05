@@ -34,6 +34,26 @@ public class MemoryAuthDAO implements AuthDAO {
         return null;
     }
 
+    public String getAuthToken(String username) {
+        try {
+            boolean validUsername = false;
+            String authToken = "";
+            for (AuthData authData : authTable.values()) {
+                if (authData.username().equals(username)) {
+                    validUsername = true;
+                    authToken = authData.authToken();
+                }
+                if (!validUsername) {
+                    throw new DataAccessException("Invalid username");
+                }
+            }
+            return authToken;
+        } catch (DataAccessException e) {
+            System.out.println(e);
+        }
+        return null;
+    }
+
     public AuthData getAuthFromUsername(String username) {
         try {
             for (AuthData authData : authTable.values()) {
@@ -49,15 +69,11 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     @Override
-    public void deleteAuth(String authToken) {
-        try {
+    public void deleteAuth(String authToken) throws DataAccessException {
             if (!authTable.containsKey(authToken)) {
                 throw new DataAccessException("Invalid authToken");
             }
             authTable.remove(authToken);
-        } catch (DataAccessException e) {
-            System.out.println(e);
-        }
     }
 
     public void clear() {

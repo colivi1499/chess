@@ -43,9 +43,8 @@ public class UserService {
         }
     }
 
-    public void logout(UserData user) throws DataAccessException {
-        userDAO.getUser(user.username());
-        authService.deleteAuth(authService.authDAO.getAuthFromUsername(user.username()).authToken());
+    public void logout(String authToken) throws DataAccessException {
+        authService.deleteAuth(authToken);
     }
 
     public void joinGame(ChessGame.TeamColor clientColor, int gameID, String authToken, String username) {
@@ -59,6 +58,10 @@ public class UserService {
                     gameService.updateGame(gameID,new GameData(gameID, gameService.getGame(gameID).whiteUsername(),username,gameService.getGame(gameID).gameName(),gameService.getGame(gameID).game()));
             }
         }
+    }
+
+    public String getAuthToken(String username) {
+        return authService.authDAO.getAuthToken(username);
     }
 
     public void clear() {
