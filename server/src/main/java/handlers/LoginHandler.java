@@ -35,6 +35,9 @@ public class LoginHandler implements Route {
             if (e.getMessage().endsWith("password")) {
                 response.status(401);
                 return serializer.toJson(new ErrorMessage("Error: unauthorized"));
+            } else {
+                response.status(500);
+                return serializer.toJson(new ErrorMessage("Error: description"));
             }
         }
         //Analyze the result from the service and set the correct status code
