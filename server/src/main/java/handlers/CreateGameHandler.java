@@ -1,9 +1,12 @@
 package handlers;
 
+import chess.PawnMovesCalculator;
 import com.google.gson.Gson;
+import error.ErrorMessage;
 import model.AuthData;
 import model.UserData;
 import request.CreateGameRequest;
+import result.CreateGameResult;
 import service.GameService;
 import service.UserService;
 import spark.Request;
@@ -20,10 +23,16 @@ public class CreateGameHandler implements Route {
 
         //Call the correct service
         GameService gameService = new GameService();
-        int createGameResult = gameService.createGame(req.gameName(),authToken);
+        int createGameResult = 0;
+        try {
+            createGameResult = gameService.createGame(req.gameName(),authToken);
+        } catch (Exception e) {
+            response.status(401);
+            return serializer.toJson(new ErrorMessage("Error: unauthorized"));
+        }
         //Analyze the result from the service and set the correct status code
         response.status(200);
         //Return the deserialized result object
-        return serializer.toJson(createGameResult);
+        return serializer.toJson(new CreateGameResult(createGameResult));
     }
 }

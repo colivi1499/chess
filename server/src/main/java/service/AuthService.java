@@ -28,7 +28,7 @@ public class AuthService {
         authDAO.clear();
     }
 
-    public String getUsername(String authToken) {
+    public String getUsername(String authToken) throws DataAccessException {
         return authDAO.getUsername(authToken);
     }
 }

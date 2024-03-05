@@ -50,7 +50,7 @@ class UserServiceTest {
     @Test
     @Order(2)
     @DisplayName("Login and logout")
-    void loginAndOut() throws DataAccessException {
+    void loginAndOut() throws Exception {
         userService.register(new UserData("Name","something","cameron@schoeny.com"));
         userService.logout(userService.getAuthToken("Name"));
         assertEquals(1,userDAO.userTable.size());
@@ -65,7 +65,7 @@ class UserServiceTest {
     @Test
     @Order(3)
     @DisplayName("Create game")
-    void createGame() {
+    void createGame() throws DataAccessException {
         userService.register(new UserData("Name","something","cameron@schoeny.com"));
         userService.gameService.createGame("Game1",authService.authDAO.getAuthFromUsername("Name").authToken());
         System.out.println(userService.gameService.listGames());
@@ -74,7 +74,7 @@ class UserServiceTest {
     @Test
     @Order(4)
     @DisplayName("Get game")
-    void getGame() {
+    void getGame() throws DataAccessException {
         userService.register(new UserData("Name","something","cameron@schoeny.com"));
         userService.gameService.createGame("Game1",authService.authDAO.getAuthFromUsername("Name").authToken());
         System.out.println(userService.gameService.getGame(gameDAO.getID("Game1")));
@@ -83,7 +83,7 @@ class UserServiceTest {
     @Test
     @Order(5)
     @DisplayName("Join game")
-    void joinGame() {
+    void joinGame() throws DataAccessException {
         userService.register(new UserData("Name","something","cameron@schoeny.com"));
         userService.gameService.createGame("Game1",authService.authDAO.getAuthFromUsername("Name").authToken());
         userService.joinGame(ChessGame.TeamColor.WHITE,gameDAO.getID("Game1"),authService.authDAO.getAuthFromUsername("Name").authToken(),"Name");

@@ -25,29 +25,23 @@ public class UserService {
         this.authService = authService;
         this.gameService = gameService;
     }
-    public AuthData register(UserData user) {
-        try {
-            userDAO.createUser(user);
-            return authService.createAuth(user.username());
-        } catch (DataAccessException e) {
-            return null;
-        }
+    public AuthData register(UserData user) throws DataAccessException {
+        userDAO.createUser(user);
+        return authService.createAuth(user.username());
     }
 
-    public AuthData login(UserData user) throws DataAccessException {
+    public AuthData login(UserData user) throws Exception {
         if (userDAO.getUser(user.username()).password().equals(user.password())) {
             return authService.createAuth(user.username());
         }
-
-
-        return new AuthData("","");
+        throw new Exception("Incorrect password");
     }
 
     public void logout(String authToken) throws DataAccessException {
         authService.deleteAuth(authToken);
     }
 
-    public void joinGame(ChessGame.TeamColor clientColor, int gameID, String authToken, String username) {
+    public void joinGame(ChessGame.TeamColor clientColor, int gameID, String authToken, String username) throws DataAccessException {
         if (authService.authDAO.getAuth(authToken) != null) {
             if (clientColor == ChessGame.TeamColor.WHITE) {
                 if (gameService.getGame(gameID).whiteUsername() == null)
@@ -64,7 +58,7 @@ public class UserService {
         return authService.authDAO.getAuthToken(username);
     }
 
-    public String getUsername(String authToken) {
+    public String getUsername(String authToken) throws DataAccessException {
         return authService.getUsername(authToken);
     }
 

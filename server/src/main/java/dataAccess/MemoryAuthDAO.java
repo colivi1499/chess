@@ -8,30 +8,21 @@ import java.util.Map;
 public class MemoryAuthDAO implements AuthDAO {
     public static Map<String,AuthData> authTable = new HashMap<>();
     @Override
-    public void createAuth(AuthData auth) {
-        try {
+    public void createAuth(AuthData auth) throws DataAccessException {
             for (AuthData authData : authTable.values()) {
                 if (authData.username().equals(auth.username())) {
                     throw new DataAccessException("Username " + auth.username() + " already has an authToken");
                 }
             }
             authTable.put(auth.authToken(), auth);
-        } catch (DataAccessException e) {
-            System.out.println(e);
-        }
     }
 
     @Override
-    public AuthData getAuth(String authToken) {
-        try {
+    public AuthData getAuth(String authToken) throws DataAccessException {
             if (!authTable.containsKey(authToken)) {
                 throw new DataAccessException("Invalid authToken");
             }
             return authTable.get(authToken);
-        } catch (DataAccessException e) {
-            System.out.println(e);
-        }
-        return null;
     }
 
     public String getAuthToken(String username) {
@@ -54,22 +45,19 @@ public class MemoryAuthDAO implements AuthDAO {
         return null;
     }
 
-    public String getUsername(String authToken) {
+    public String getUsername(String authToken) throws DataAccessException {
+        if (!authTable.containsKey(authToken))
+            throw new DataAccessException("Authtoken not found");
         return authTable.get(authToken).username();
     }
 
-    public AuthData getAuthFromUsername(String username) {
-        try {
+    public AuthData getAuthFromUsername(String username) throws DataAccessException {
             for (AuthData authData : authTable.values()) {
                 if (authData.username().equals(username)) {
                     return authData;
                 }
             }
             throw new DataAccessException("Invalid username " + username);
-        } catch (DataAccessException e) {
-            System.out.println(e);
-            return null;
-        }
     }
 
     @Override

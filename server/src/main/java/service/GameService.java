@@ -1,11 +1,13 @@
 package service;
 
+import dataAccess.DataAccessException;
 import dataAccess.MemoryGameDAO;
 import dataAccess.MemoryUserDAO;
 import model.GameData;
 import model.UserData;
 import result.GameResult;
 
+import java.awt.color.ICC_ColorSpace;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -20,7 +22,7 @@ public class GameService {
         GameService.gameDAO = gameDAO;
     }
 
-    public int createGame(String gameName, String authToken) {
+    public int createGame(String gameName, String authToken) throws DataAccessException {
         return gameDAO.createGame(gameName,authToken);
     }
 

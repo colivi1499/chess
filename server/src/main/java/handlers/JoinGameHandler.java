@@ -10,6 +10,8 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+import java.util.Objects;
+
 public class JoinGameHandler implements Route {
     @Override
     public Object handle(Request request, Response response) throws Exception {
@@ -20,15 +22,22 @@ public class JoinGameHandler implements Route {
 
         //Call the correct service
         UserService userService = new UserService();
-        if (req.playerColor().equals("WHITE")) {
-            userService.joinGame(ChessGame.TeamColor.WHITE,req.gameID(),authToken, userService.getUsername(authToken));
-        } else if (req.playerColor().equals("BLACK")) {
-            userService.joinGame(ChessGame.TeamColor.WHITE,req.gameID(),authToken, userService.getUsername(authToken));
+        ChessGame.TeamColor color;
+        if (Objects.equals(req.playerColor(), "WHITE")) {
+            color = ChessGame.TeamColor.WHITE;
+        } else if (Objects.equals(req.playerColor(), "BLACK")) {
+            color = ChessGame.TeamColor.BLACK;
         } else {
             response.status(400);
-            return new ErrorMessage("Error: bad request");
+            return serializer.toJson(new ErrorMessage("Error: bad request"));
         }
         //Analyze the result from the service and set the correct status code
+        try {
+            userService.joinGame(color,req.gameID(),authToken, userService.getUsername(authToken));
+        } catch (Exception e) {
+            response.status(401);
+            return serializer.toJson(new ErrorMessage("Error: unauthorized"));
+        }
         response.status(200);
         //Return the deserialized result object
         return serializer.toJson(new Object());

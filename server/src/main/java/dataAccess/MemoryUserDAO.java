@@ -11,14 +11,10 @@ public class MemoryUserDAO implements UserDAO {
     public static Map<String, UserData> userTable = new HashMap<>();
     @Override
     public void createUser(UserData user) throws DataAccessException {
-        try {
             if (userTable.containsKey(user.username())) {
                 throw new DataAccessException("Username " + user.username() + " already exists");
             }
             userTable.put(user.username(), user);
-        } catch (DataAccessException e) {
-            System.out.println(e);
-        }
     }
 
     @Override

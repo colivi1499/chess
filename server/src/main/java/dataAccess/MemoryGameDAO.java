@@ -11,7 +11,7 @@ public class MemoryGameDAO implements GameDAO {
     private static MemoryAuthDAO authDAO = new MemoryAuthDAO();
 
     @Override
-    public int createGame(String gameName, String authToken) {
+    public int createGame(String gameName, String authToken) throws DataAccessException {
         int gameID = 0;
             if (authDAO.getAuth(authToken) != null) {
                 gameID = generateGameID(gameName);
