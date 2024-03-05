@@ -28,6 +28,6 @@ public class LogoutHandler implements Route {
         //Analyze the result from the service and set the correct status code
         response.status(200);
         //Return the deserialized result object
-        return null;
+        return serializer.toJson(new Object());
     }
 }

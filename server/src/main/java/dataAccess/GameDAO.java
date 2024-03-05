@@ -1,17 +1,14 @@
 package dataAccess;
 
-import chess.ChessGame;
 import model.GameData;
-import model.UserData;
 
-import java.util.Collection;
 import java.util.Map;
 
 public interface GameDAO {
 
 
 
-    void createGame(String gameName, String authToken);
+    int createGame(String gameName, String authToken);
 
     GameData getGame(int gameID) throws DataAccessException;
 

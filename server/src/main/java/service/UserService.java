@@ -34,13 +34,13 @@ public class UserService {
         }
     }
 
-    public AuthData login(UserData user) {
-        try {
-            userDAO.getUser(user.username());
+    public AuthData login(UserData user) throws DataAccessException {
+        if (userDAO.getUser(user.username()).password().equals(user.password())) {
             return authService.createAuth(user.username());
-        } catch (DataAccessException e) {
-            return null;
         }
+
+
+        return new AuthData("","");
     }
 
     public void logout(String authToken) throws DataAccessException {
@@ -62,6 +62,10 @@ public class UserService {
 
     public String getAuthToken(String username) {
         return authService.authDAO.getAuthToken(username);
+    }
+
+    public String getUsername(String authToken) {
+        return authService.getUsername(authToken);
     }
 
     public void clear() {

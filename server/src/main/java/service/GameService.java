@@ -4,7 +4,9 @@ import dataAccess.MemoryGameDAO;
 import dataAccess.MemoryUserDAO;
 import model.GameData;
 import model.UserData;
+import result.GameResult;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class GameService {
@@ -18,12 +20,16 @@ public class GameService {
         GameService.gameDAO = gameDAO;
     }
 
-    public void createGame(String gameName, String authToken) {
-        gameDAO.createGame(gameName,authToken);
+    public int createGame(String gameName, String authToken) {
+        return gameDAO.createGame(gameName,authToken);
     }
 
-    public Collection<GameData> listGames() {
-        return gameDAO.listGames().values();
+    public Collection<GameResult> listGames() {
+        Collection<GameResult> listGamesResult = new ArrayList<>();
+        for (GameData gameData : gameDAO.listGames().values()) {
+            listGamesResult.add(new GameResult(gameData.gameID(),gameData.whiteUsername(), gameData.blackUsername(),gameData.gameName()));
+        }
+        return listGamesResult;
     }
 
     public GameData getGame(int gameID) {

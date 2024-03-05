@@ -1,9 +1,7 @@
 package dataAccess;
 
 import chess.ChessGame;
-import model.AuthData;
 import model.GameData;
-import model.UserData;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,11 +11,13 @@ public class MemoryGameDAO implements GameDAO {
     private static MemoryAuthDAO authDAO = new MemoryAuthDAO();
 
     @Override
-    public void createGame(String gameName, String authToken) {
+    public int createGame(String gameName, String authToken) {
+        int gameID = 0;
             if (authDAO.getAuth(authToken) != null) {
-                int gameID = generateGameID(gameName);
+                gameID = generateGameID(gameName);
                 chessGames.put(gameID, new GameData(gameID,null,null,gameName,new ChessGame()));
             }
+        return gameID;
     }
 
 

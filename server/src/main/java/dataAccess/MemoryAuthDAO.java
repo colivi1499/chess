@@ -11,7 +11,7 @@ public class MemoryAuthDAO implements AuthDAO {
     public void createAuth(AuthData auth) {
         try {
             for (AuthData authData : authTable.values()) {
-                if (authData.username() == auth.username()) {
+                if (authData.username().equals(auth.username())) {
                     throw new DataAccessException("Username " + auth.username() + " already has an authToken");
                 }
             }
@@ -52,6 +52,10 @@ public class MemoryAuthDAO implements AuthDAO {
             System.out.println(e);
         }
         return null;
+    }
+
+    public String getUsername(String authToken) {
+        return authTable.get(authToken).username();
     }
 
     public AuthData getAuthFromUsername(String username) {
