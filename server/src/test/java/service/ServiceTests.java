@@ -1,22 +1,17 @@
 package service;
 
-import chess.ChessBoard;
 import chess.ChessGame;
 import dataAccess.DataAccessException;
 import dataAccess.MemoryAuthDAO;
 import dataAccess.MemoryGameDAO;
 import dataAccess.MemoryUserDAO;
-import model.AuthData;
-import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
-
-import java.lang.reflect.Executable;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class UserServiceTest {
+class ServiceTests {
     MemoryUserDAO userDAO = new MemoryUserDAO();
     MemoryGameDAO gameDAO = new MemoryGameDAO();
     AuthService authService = new AuthService();
@@ -44,7 +39,8 @@ class UserServiceTest {
     @DisplayName("Duplicate name")
     void registerDuplicateNames() throws DataAccessException {
         userService.register(new UserData("Name","something","cameron@schoeny.com"));
-        userService.register(new UserData("Name","something","cameron@schoeny.com"));
+        assertThrows(DataAccessException.class, () -> {userService.register(new UserData("Name","something","cameron@schoeny.com"));});
+
         assertEquals(1,userDAO.userTable.size());
         assertTrue(userDAO.userTable.containsKey("Name"));
     }
