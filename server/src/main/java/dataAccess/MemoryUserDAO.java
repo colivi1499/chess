@@ -19,13 +19,9 @@ public class MemoryUserDAO implements UserDAO {
 
     @Override
     public UserData getUser(String username) throws DataAccessException {
-        try {
             if (!userTable.containsKey(username)) {
                 throw new DataAccessException("Invalid username");
             }
-        } catch (DataAccessException e) {
-            System.out.println(e);
-        }
         return userTable.get(username);
     }
 

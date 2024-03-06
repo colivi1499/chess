@@ -20,6 +20,11 @@ public class RegisterHandler implements Route {
         AuthData registerResult = new AuthData("","");
         //Call the correct service
         UserService userService = new UserService();
+
+        if (user.username() == null || user.password() == null) {
+            response.status(400);
+            return serializer.toJson(new ErrorMessage("Error: bad request"));
+        }
         try {
             registerResult = userService.register(user);
         } catch (DataAccessException e) {

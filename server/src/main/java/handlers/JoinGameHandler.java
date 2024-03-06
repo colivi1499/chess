@@ -18,7 +18,7 @@ public class JoinGameHandler implements Route {
         //Deserialize request body into a request (not for clear)
         var serializer = new Gson();
         JoinGameRequest req = serializer.fromJson(request.body(), JoinGameRequest.class);
-        String authToken = serializer.fromJson(request.headers("authorization: "), String.class);
+        String authToken = request.headers("authorization");
 
         //Call the correct service
         UserService userService = new UserService();
@@ -28,15 +28,25 @@ public class JoinGameHandler implements Route {
         } else if (Objects.equals(req.playerColor(), "BLACK")) {
             color = ChessGame.TeamColor.BLACK;
         } else {
-            response.status(400);
-            return serializer.toJson(new ErrorMessage("Error: bad request"));
+            color = null;
+            //response.status(200);
+            //return serializer.toJson(new Object());
         }
         //Analyze the result from the service and set the correct status code
         try {
             userService.joinGame(color,req.gameID(),authToken, userService.getUsername(authToken));
         } catch (Exception e) {
-            response.status(401);
-            return serializer.toJson(new ErrorMessage("Error: unauthorized"));
+            if (e.getMessage().endsWith("gameID")) {
+                response.status(400);
+                return serializer.toJson(new ErrorMessage("Error: bad request"));
+            } else if (e.getMessage().endsWith("color")) {
+                response.status(403);
+                return serializer.toJson(new ErrorMessage("Error: already taken"));
+            } else {
+                    response.status(401);
+                    return serializer.toJson(new ErrorMessage("Error: unauthorized"));
+            }
+
         }
         response.status(200);
         //Return the deserialized result object

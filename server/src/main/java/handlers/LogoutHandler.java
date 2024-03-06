@@ -15,7 +15,7 @@ public class LogoutHandler implements Route {
     public Object handle(Request request, Response response) throws Exception {
         //Deserialize request body into a request (not for clear)
         var serializer = new Gson();
-        String authToken = serializer.fromJson(request.headers("authorization: "), String.class);
+        String authToken = request.headers("authorization");
 
         //Call the correct service
         UserService userService = new UserService();

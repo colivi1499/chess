@@ -22,16 +22,11 @@ public class MemoryGameDAO implements GameDAO {
 
 
     @Override
-    public GameData getGame(int gameID) {
-        try {
+    public GameData getGame(int gameID) throws DataAccessException {
             if (!chessGames.containsKey(gameID)) {
                 throw new DataAccessException("Invalid gameID");
             }
             return chessGames.get(gameID);
-        } catch (DataAccessException e) {
-            System.out.println(e);
-        }
-        return null;
     }
 
     @Override
@@ -57,7 +52,7 @@ public class MemoryGameDAO implements GameDAO {
 
     private int generateGameID(String gameName) {
         String id = gameName + System.currentTimeMillis();
-        return id.hashCode();
+        return Math.abs(id.hashCode()) + 1;
     }
 
     public int getID(String gameName) {

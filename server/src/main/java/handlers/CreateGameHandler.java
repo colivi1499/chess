@@ -19,9 +19,14 @@ public class CreateGameHandler implements Route {
         //Deserialize request body into a request (not for clear)
         var serializer = new Gson();
         CreateGameRequest req = serializer.fromJson(request.body(), CreateGameRequest.class);
-        String authToken = serializer.fromJson(request.headers("authorization: "), String.class);
+        String authToken = request.headers("authorization");
 
         //Call the correct service
+        if (req.gameName() == null) {
+            response.status(400);
+            return serializer.toJson(new ErrorMessage("Error: bad request"));
+        }
+
         GameService gameService = new GameService();
         int createGameResult = 0;
         try {

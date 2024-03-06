@@ -9,11 +9,6 @@ public class MemoryAuthDAO implements AuthDAO {
     public static Map<String,AuthData> authTable = new HashMap<>();
     @Override
     public void createAuth(AuthData auth) throws DataAccessException {
-            for (AuthData authData : authTable.values()) {
-                if (authData.username().equals(auth.username())) {
-                    throw new DataAccessException("Username " + auth.username() + " already has an authToken");
-                }
-            }
             authTable.put(auth.authToken(), auth);
     }
 
@@ -25,8 +20,7 @@ public class MemoryAuthDAO implements AuthDAO {
             return authTable.get(authToken);
     }
 
-    public String getAuthToken(String username) {
-        try {
+    public String getAuthToken(String username) throws DataAccessException {
             boolean validUsername = false;
             String authToken = "";
             for (AuthData authData : authTable.values()) {
@@ -39,10 +33,6 @@ public class MemoryAuthDAO implements AuthDAO {
                 }
             }
             return authToken;
-        } catch (DataAccessException e) {
-            System.out.println(e);
-        }
-        return null;
     }
 
     public String getUsername(String authToken) throws DataAccessException {

@@ -28,15 +28,19 @@ public class LoginHandler implements Route {
                 response.status(403);
                 return serializer.toJson(new ErrorMessage("Error: already taken"));
             }
-            if (e.getMessage().endsWith("authToken")) {
+            else if (e.getMessage().endsWith("authToken")) {
                 response.status(500);
-                return serializer.toJson(new ErrorMessage("Error: description"));
+                return serializer.toJson(new ErrorMessage("Error: unauthorized"));
             }
-            if (e.getMessage().endsWith("password")) {
+            else if (e.getMessage().endsWith("password")) {
+                response.status(401);
+                return serializer.toJson(new ErrorMessage("Error: unauthorized"));
+            }
+            else if (e.getMessage().endsWith("username")) {
                 response.status(401);
                 return serializer.toJson(new ErrorMessage("Error: unauthorized"));
             } else {
-                response.status(500);
+                response.status(200);
                 return serializer.toJson(new ErrorMessage("Error: description"));
             }
         }

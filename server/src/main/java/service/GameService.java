@@ -34,7 +34,7 @@ public class GameService {
         return listGamesResult;
     }
 
-    public GameData getGame(int gameID) {
+    public GameData getGame(int gameID) throws DataAccessException {
         return gameDAO.getGame(gameID);
     }
 
