@@ -14,5 +14,7 @@ public interface GameDAO {
 
     Map<Integer,GameData> listGames();
 
-    void updateGame(int gameID, GameData newGame) throws DataAccessException;
+    void updateGame(int gameID, GameData newGame);
+
+    void clear();
 }

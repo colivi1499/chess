@@ -21,7 +21,12 @@ public class SqlGameDAO implements GameDAO {
     }
 
     @Override
-    public void updateGame(int gameID, GameData newGame) throws DataAccessException {
+    public void updateGame(int gameID, GameData newGame) {
+
+    }
+
+    @Override
+    public void clear() {
 
     }
 }

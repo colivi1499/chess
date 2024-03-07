@@ -1,6 +1,7 @@
 package service;
 
 import dataAccess.DataAccessException;
+import dataAccess.GameDAO;
 import dataAccess.MemoryGameDAO;
 import dataAccess.MemoryUserDAO;
 import model.GameData;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class GameService {
-    static MemoryGameDAO gameDAO;
+    static GameDAO gameDAO;
 
     public GameService() {
         this(new MemoryGameDAO());
