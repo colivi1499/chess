@@ -1,5 +1,6 @@
 package service;
 
+import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.MemoryAuthDAO;
 import model.AuthData;
@@ -8,7 +9,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 public class AuthService {
-    public MemoryAuthDAO authDAO = new MemoryAuthDAO();
+    public AuthDAO authDAO;
+
+    public AuthService() {
+        this(new MemoryAuthDAO());
+    }
+
+    public AuthService(AuthDAO authDAO) {
+        this.authDAO = authDAO;
+    }
     public AuthData createAuth(String username) throws DataAccessException {
         AuthData auth = new AuthData(username, generateAuthToken(username));
         authDAO.createAuth(auth);

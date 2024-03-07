@@ -9,4 +9,12 @@ public interface AuthDAO {
     AuthData getAuth(String authToken) throws DataAccessException;
 
     void deleteAuth(String authToken) throws DataAccessException;
+
+    String getUsername(String authToken) throws DataAccessException;
+
+    void clear();
+
+    String getAuthToken(String username) throws DataAccessException;
+
+    AuthData getAuthFromUsername(String name) throws DataAccessException;
 }
