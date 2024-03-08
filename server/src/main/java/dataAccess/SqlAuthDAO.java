@@ -3,6 +3,7 @@ package dataAccess;
 import com.google.gson.Gson;
 import model.AuthData;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -23,45 +24,67 @@ public class SqlAuthDAO implements AuthDAO {
 
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
-        /*try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT id, json FROM pet WHERE id=?";
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT username, authToken FROM authData WHERE authToken=?";
             try (var ps = conn.prepareStatement(statement)) {
-                ps.setInt(1, id);
+                ps.setString(1, authToken);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        return readPet(rs);
+                        return readAuth(rs);
                     }
                 }
             }
         } catch (Exception e) {
-            throw new ResponseException(500, String.format("Unable to read data: %s", e.getMessage()));
-        }*/
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
         return null;
     }
 
     @Override
     public void deleteAuth(String authToken) throws DataAccessException {
-
+        var statement = "DELETE FROM authData WHERE authToken=?";
+        executeUpdate(statement, authToken);
     }
 
     @Override
-    public String getUsername(String authToken) {
-        return null;
+    public String getUsername(String authToken) throws DataAccessException {
+        return getAuth(authToken).username();
     }
 
     @Override
-    public void clear() {
-
+    public void clear() throws DataAccessException {
+        var statement = "TRUNCATE authData";
+        executeUpdate(statement);
     }
 
     @Override
     public String getAuthToken(String username) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT username, authToken FROM authData WHERE username=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readAuth(rs).authToken();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
         return null;
     }
 
     @Override
     public AuthData getAuthFromUsername(String name) throws DataAccessException {
-        return null;
+        return new AuthData(name, getAuthToken(name));
+    }
+
+    private AuthData readAuth(ResultSet rs) throws SQLException {
+        var authToken = rs.getString("authToken");
+        var username = rs.getString("username");
+        var auth = new AuthData(username, authToken);
+        return auth;
     }
 
     private int executeUpdate(String statement, Object... params) throws DataAccessException {

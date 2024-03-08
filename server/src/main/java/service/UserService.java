@@ -68,7 +68,7 @@ public class UserService {
         return authService.getUsername(authToken);
     }
 
-    public void clear() {
+    public void clear() throws DataAccessException {
         userDAO.clear();
         authService.clear();
         gameService.clear();

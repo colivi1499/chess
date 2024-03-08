@@ -19,7 +19,7 @@ class ServiceTests {
     UserService userService = new UserService(userDAO,authService,gameService);
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws DataAccessException {
         userService.clear();
     }
 

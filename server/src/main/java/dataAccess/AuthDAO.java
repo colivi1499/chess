@@ -12,7 +12,7 @@ public interface AuthDAO {
 
     String getUsername(String authToken) throws DataAccessException;
 
-    void clear();
+    void clear() throws DataAccessException;
 
     String getAuthToken(String username) throws DataAccessException;
 

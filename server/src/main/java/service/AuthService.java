@@ -33,7 +33,7 @@ public class AuthService {
         return new String(bytes,StandardCharsets.UTF_8);
     }
 
-    public void clear() {
+    public void clear() throws DataAccessException {
         authDAO.clear();
     }
 
