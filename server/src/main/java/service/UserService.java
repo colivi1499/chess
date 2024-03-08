@@ -2,9 +2,7 @@ package service;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import dataAccess.AuthDAO;
-import dataAccess.DataAccessException;
-import dataAccess.MemoryUserDAO;
+import dataAccess.*;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -12,12 +10,18 @@ import model.UserData;
 import javax.xml.crypto.Data;
 
 public class UserService {
-    MemoryUserDAO userDAO;
+    UserDAO userDAO;
     AuthService authService;
     GameService gameService;
 
     public UserService() {
         this(new MemoryUserDAO(), new AuthService(), new GameService());
+    }
+
+    public UserService(UserDAO userDAO) throws DataAccessException {
+        this.userDAO = userDAO;
+        this.authService = new AuthService(new SqlAuthDAO());
+        this.gameService = new GameService(new SqlGameDAO());
     }
 
     public UserService(MemoryUserDAO userDAO, AuthService authService, GameService gameService) {

@@ -19,7 +19,7 @@ public class GameService {
         this(new MemoryGameDAO());
     }
 
-    public GameService(MemoryGameDAO gameDAO) {
+    public GameService(GameDAO gameDAO) {
         GameService.gameDAO = gameDAO;
     }
 
