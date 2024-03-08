@@ -18,7 +18,6 @@ public class SqlAuthDAO implements AuthDAO {
     @Override
     public void createAuth(AuthData auth) throws DataAccessException {
         var statement = "INSERT INTO authData (username, authToken) VALUES (?, ?)";
-        var json = new Gson().toJson(auth);
         executeUpdate(statement, auth.username(), auth.authToken());
     }
 

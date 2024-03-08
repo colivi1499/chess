@@ -1,6 +1,8 @@
 package dataAccess;
 
+import chess.ChessGame;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 
@@ -11,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class SqlDaoTests {
 
     SqlAuthDAO sqlAuth = new SqlAuthDAO();
+    SqlGameDAO sqlGame = new SqlGameDAO();
 
     public SqlDaoTests() throws DataAccessException {
     }
@@ -18,6 +21,7 @@ public class SqlDaoTests {
     @BeforeEach
     void setup() throws DataAccessException {
         sqlAuth.clear();
+        sqlGame.clear();
     }
     @Test
     @DisplayName("Positive create auth")
@@ -83,5 +87,22 @@ public class SqlDaoTests {
         sqlAuth.createAuth(new AuthData("user1", "authorization1"));
         sqlAuth.deleteAuth("authorization1");
         sqlAuth.createAuth(new AuthData("user1", "authorization1"));
+    }
+
+    @Test
+    @DisplayName("Create Game")
+    @Order(9)
+    void createGame() throws DataAccessException {
+        sqlAuth.createAuth(new AuthData("user1", "authorization1"));
+        sqlGame.createGame("Game1","authorization");
+    }
+
+    @Test
+    @DisplayName("Get Game")
+    @Order(10)
+    void getGame() throws DataAccessException {
+        sqlAuth.createAuth(new AuthData("user1", "authorization1"));
+        int id = sqlGame.createGame("Game1","authorization1");
+        assertEquals(sqlGame.getGame(id),new GameData(id,null,null,"Game1",new ChessGame()));
     }
 }

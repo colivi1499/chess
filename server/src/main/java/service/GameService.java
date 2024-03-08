@@ -43,7 +43,7 @@ public class GameService {
         gameDAO.updateGame(gameID,newGame);
     }
 
-    public void clear() {
+    public void clear() throws DataAccessException {
         gameDAO.clear();
     }
 
