@@ -105,4 +105,14 @@ public class SqlDaoTests {
         int id = sqlGame.createGame("Game1","authorization1");
         assertEquals(sqlGame.getGame(id),new GameData(id,null,null,"Game1",new ChessGame()));
     }
+
+    @Test
+    @DisplayName("Update Game")
+    @Order(11)
+    void updateGame() throws DataAccessException {
+        sqlAuth.createAuth(new AuthData("user1", "authorization1"));
+        int id = sqlGame.createGame("Game1","authorization1");
+        sqlGame.updateGame(id,new GameData(id,"Updated Game",null,"Game1",new ChessGame()));
+        assertEquals(sqlGame.getGame(id),new GameData(id,"Updated Game",null,"Game1",new ChessGame()));
+    }
 }
