@@ -6,6 +6,7 @@ import dataAccess.*;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.xml.crypto.Data;
 
@@ -35,7 +36,8 @@ public class UserService {
     }
 
     public AuthData login(UserData user) throws Exception {
-        if (userDAO.getUser(user.username()).password().equals(user.password())) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if (encoder.matches(user.password(),userDAO.getUser(user.username()).password())) {
             return authService.createAuth(user.username());
         }
         throw new Exception("Incorrect password");

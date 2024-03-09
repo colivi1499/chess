@@ -3,6 +3,7 @@ package dataAccess;
 import com.google.gson.Gson;
 import model.AuthData;
 
+import javax.xml.crypto.Data;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -36,18 +37,28 @@ public class SqlAuthDAO implements AuthDAO {
         } catch (Exception e) {
             throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
         }
-        return null;
+        throw new DataAccessException("Invalid authToken");
     }
 
     @Override
     public void deleteAuth(String authToken) throws DataAccessException {
         var statement = "DELETE FROM authData WHERE authToken=?";
-        executeUpdate(statement, authToken);
+        try {
+            executeUpdate(statement, authToken);
+        } catch (DataAccessException e) {
+            throw new DataAccessException("Invalid authToken");
+        }
     }
 
     @Override
     public String getUsername(String authToken) throws DataAccessException {
-        return getAuth(authToken).username();
+        String username;
+        try {
+            username = getAuth(authToken).username();
+        } catch (DataAccessException e){
+            throw new DataAccessException("Authtoken not found");
+        }
+        return username;
     }
 
     @Override
@@ -71,12 +82,16 @@ public class SqlAuthDAO implements AuthDAO {
         } catch (Exception e) {
             throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
         }
-        return null;
+        throw new DataAccessException("Invalid username");
     }
 
     @Override
     public AuthData getAuthFromUsername(String name) throws DataAccessException {
-        return new AuthData(name, getAuthToken(name));
+        try {
+            return new AuthData(name, getAuthToken(name));
+        } catch (DataAccessException e) {
+            throw new DataAccessException("Invalid username " + name);
+        }
     }
 
     private AuthData readAuth(ResultSet rs) throws SQLException {

@@ -2,6 +2,7 @@ package dataAccess;
 
 import model.AuthData;
 import model.UserData;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,7 +18,13 @@ public class SqlUserDAO implements UserDAO {
     @Override
     public void createUser(UserData user) throws DataAccessException {
         var statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
-        executeUpdate(statement, user.username(), user.password(), user.email());
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hashedPassword = encoder.encode(user.password());
+        try {
+            executeUpdate(statement, user.username(), hashedPassword, user.email());
+        } catch (DataAccessException e) {
+            throw new DataAccessException("Username already exists");
+        }
     }
 
     @Override
@@ -35,7 +42,7 @@ public class SqlUserDAO implements UserDAO {
         } catch (Exception e) {
             throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
         }
-        return null;
+        throw new DataAccessException("Invalid username");
     }
 
     @Override
@@ -56,7 +63,7 @@ public class SqlUserDAO implements UserDAO {
             """
             CREATE TABLE IF NOT EXISTS  users (
               `username` VARCHAR(50) NOT NULL PRIMARY KEY,
-              `password` VARCHAR(50) NOT NULL,
+              `password` longtext NOT NULL,
               `email` VARCHAR(50) NOT NULL
             )
             """

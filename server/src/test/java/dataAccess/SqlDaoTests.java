@@ -5,9 +5,9 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SqlDaoTests {
@@ -96,7 +96,7 @@ public class SqlDaoTests {
     @Order(9)
     void createGame() throws DataAccessException {
         sqlAuth.createAuth(new AuthData("user1", "authorization1"));
-        sqlGame.createGame("Game1","authorization");
+        sqlGame.createGame("Game1","authorization1");
     }
 
     @Test
@@ -142,6 +142,22 @@ public class SqlDaoTests {
     void getUser() throws DataAccessException {
         sqlUser.createUser(new UserData("Cameron","pioneer47","cameron@schoeny.com"));
         var user = sqlUser.getUser("Cameron");
-        assertEquals(new UserData("Cameron","pioneer47","cameron@schoeny.com"),user);
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        assertTrue(encoder.matches("pioneer47",user.password()));
+    }
+
+    @Test
+    @DisplayName("Get User Negative")
+    @Order(15)
+    void getNonexistentUser() throws DataAccessException {
+        assertThrows(DataAccessException.class, () -> {var user = sqlUser.getUser("Cameron");});
+    }
+
+    @Test
+    @DisplayName("Create User that already exists")
+    @Order(13)
+    void createUserAlreadyExists() throws DataAccessException {
+        sqlUser.createUser(new UserData("Cameron","pioneer47","cameron@schoeny.com"));
+        assertThrows(DataAccessException.class, () -> {sqlUser.createUser(new UserData("Cameron","pioneer47","cameron@schoeny.com"));});
     }
 }
