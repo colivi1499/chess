@@ -30,6 +30,7 @@ public class SqlDaoTests {
     @Order(1)
     void createAuth() throws DataAccessException {
         sqlAuth.createAuth(new AuthData("user1", "authorization"));
+        assertEquals(new AuthData("user1","authorization"),sqlAuth.getAuth("authorization"));
     }
 
     @Test
@@ -46,7 +47,14 @@ public class SqlDaoTests {
     void clearAuth() throws DataAccessException {
         sqlAuth.createAuth(new AuthData("user1", "authorization1"));
         sqlAuth.createAuth(new AuthData("user2", "authorization2"));
+        sqlGame.createGame("game","authorization1");
+        sqlUser.createUser(new UserData("Cameron","Password123","email@gmail.com"));
         sqlAuth.clear();
+        sqlUser.clear();
+        sqlGame.clear();
+        assertEquals(0,sqlGame.listGames().size());
+        assertThrows(DataAccessException.class, () -> {sqlUser.getUser("Cameron");});
+        assertThrows(DataAccessException.class, () -> {sqlAuth.getAuth("authorization1");});
     }
 
     @Test
@@ -88,7 +96,7 @@ public class SqlDaoTests {
     void deleteAuth() throws DataAccessException {
         sqlAuth.createAuth(new AuthData("user1", "authorization1"));
         sqlAuth.deleteAuth("authorization1");
-        sqlAuth.createAuth(new AuthData("user1", "authorization1"));
+        assertThrows(DataAccessException.class, () -> {sqlAuth.getAuth("authorization1");});
     }
 
     @Test
@@ -97,6 +105,7 @@ public class SqlDaoTests {
     void createGame() throws DataAccessException {
         sqlAuth.createAuth(new AuthData("user1", "authorization1"));
         sqlGame.createGame("Game1","authorization1");
+        assertEquals(1,sqlGame.listGames().size());
     }
 
     @Test
@@ -134,6 +143,7 @@ public class SqlDaoTests {
     @Order(13)
     void createUser() throws DataAccessException {
         sqlUser.createUser(new UserData("Cameron","pioneer47","cameron@schoeny.com"));
+        assertEquals("Cameron", sqlUser.getUser("Cameron").username());
     }
 
     @Test
@@ -155,9 +165,74 @@ public class SqlDaoTests {
 
     @Test
     @DisplayName("Create User that already exists")
-    @Order(13)
+    @Order(16)
     void createUserAlreadyExists() throws DataAccessException {
         sqlUser.createUser(new UserData("Cameron","pioneer47","cameron@schoeny.com"));
         assertThrows(DataAccessException.class, () -> {sqlUser.createUser(new UserData("Cameron","pioneer47","cameron@schoeny.com"));});
+    }
+
+    @Test
+    @DisplayName("List games when there are no games")
+    @Order(17)
+    void listGamesEmpty() throws DataAccessException {
+        assertEquals(0,sqlGame.listGames().size());
+    }
+
+    @Test
+    @DisplayName("Update Game Invalid ID")
+    @Order(18)
+    void updateGameInvalidID() throws DataAccessException {
+        sqlAuth.createAuth(new AuthData("user1", "authorization1"));
+        int id = sqlGame.createGame("Game1","authorization1");
+        assertThrows(DataAccessException.class, () -> {sqlGame.updateGame(-1,new GameData(0,"Updated Game",null,"Game1",new ChessGame()));});
+    }
+
+    @Test
+    @DisplayName("Get Game that doesn't exist")
+    @Order(19)
+    void getGameInvalid() throws DataAccessException {
+        assertThrows(DataAccessException.class, () -> {sqlGame.getGame(-12);});
+    }
+
+    @Test
+    @DisplayName("Create Game Invalid auth token")
+    @Order(20)
+    void createGameInvalid() throws DataAccessException {
+        assertThrows(DataAccessException.class, () -> {sqlGame.createGame("Game1","auth");});
+    }
+
+    @Test
+    @DisplayName("Delete invalid auth token")
+    @Order(21)
+    void deleteAuthInvalid() throws DataAccessException {
+        assertThrows(DataAccessException.class, () -> {sqlAuth.deleteAuth("authorization1");});
+    }
+
+    @Test
+    @DisplayName("Get username token from an invalid authToken")
+    @Order(22)
+    void getUsernameInvalid() throws DataAccessException {
+        assertThrows(DataAccessException.class, () -> {sqlAuth.getUsername("authorization1");});
+    }
+
+    @Test
+    @DisplayName("Get Auth token from invalid username")
+    @Order(23)
+    void getAuthTokenFromUsernameInvalid() throws DataAccessException {
+        assertThrows(DataAccessException.class, () -> {sqlAuth.getAuthToken("user");});
+    }
+
+    @Test
+    @DisplayName("Get Auth from invalid username")
+    @Order(24)
+    void getAuthFromUsernameInvalid() throws DataAccessException {
+        assertThrows(DataAccessException.class, () -> {sqlAuth.getAuthFromUsername("user");});
+    }
+
+    @Test
+    @DisplayName("Get invalid authtoken")
+    @Order(25)
+    void getAuthInvalid() throws DataAccessException {
+        assertThrows(DataAccessException.class, () -> {sqlAuth.getAuth("authorization1");});
     }
 }
