@@ -14,6 +14,7 @@ public class SqlDaoTests {
 
     SqlAuthDAO sqlAuth = new SqlAuthDAO();
     SqlGameDAO sqlGame = new SqlGameDAO();
+    SqlUserDAO sqlUser = new SqlUserDAO();
 
     public SqlDaoTests() throws DataAccessException {
     }
@@ -22,6 +23,7 @@ public class SqlDaoTests {
     void setup() throws DataAccessException {
         sqlAuth.clear();
         sqlGame.clear();
+        sqlUser.clear();
     }
     @Test
     @DisplayName("Positive create auth")
@@ -125,5 +127,21 @@ public class SqlDaoTests {
         int id2 = sqlGame.createGame("Game2","authorization1");
         int id3 = sqlGame.createGame("Game3","authorization1");
         assertEquals(3,sqlGame.listGames().size());
+    }
+
+    @Test
+    @DisplayName("Create User")
+    @Order(13)
+    void createUser() throws DataAccessException {
+        sqlUser.createUser(new UserData("Cameron","pioneer47","cameron@schoeny.com"));
+    }
+
+    @Test
+    @DisplayName("Get User")
+    @Order(14)
+    void getUser() throws DataAccessException {
+        sqlUser.createUser(new UserData("Cameron","pioneer47","cameron@schoeny.com"));
+        var user = sqlUser.getUser("Cameron");
+        assertEquals(new UserData("Cameron","pioneer47","cameron@schoeny.com"),user);
     }
 }
