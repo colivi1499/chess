@@ -1,15 +1,11 @@
 package handlers;
 
-import chess.PawnMovesCalculator;
 import com.google.gson.Gson;
-import dataAccess.SqlGameDAO;
+import dataAccessTests.SqlGameDAO;
 import error.ErrorMessage;
-import model.AuthData;
-import model.UserData;
 import request.CreateGameRequest;
 import result.CreateGameResult;
-import service.GameService;
-import service.UserService;
+import serviceTests.GameService;
 import spark.Request;
 import spark.Response;
 import spark.Route;

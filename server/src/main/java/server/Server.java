@@ -2,9 +2,6 @@ package server;
 
 import handlers.*;
 import spark.*;
-import dataAccess.DatabaseManager;
-
-import static spark.Spark.*;
 
 public class Server {
 

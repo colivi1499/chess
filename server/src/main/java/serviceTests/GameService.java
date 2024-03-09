@@ -1,14 +1,11 @@
-package service;
+package serviceTests;
 
-import dataAccess.DataAccessException;
-import dataAccess.GameDAO;
-import dataAccess.MemoryGameDAO;
-import dataAccess.MemoryUserDAO;
+import dataAccessTests.DataAccessException;
+import dataAccessTests.GameDAO;
+import dataAccessTests.MemoryGameDAO;
 import model.GameData;
-import model.UserData;
 import result.GameResult;
 
-import java.awt.color.ICC_ColorSpace;
 import java.util.ArrayList;
 import java.util.Collection;
 

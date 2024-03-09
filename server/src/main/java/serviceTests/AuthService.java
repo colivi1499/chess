@@ -1,8 +1,8 @@
-package service;
+package serviceTests;
 
-import dataAccess.AuthDAO;
-import dataAccess.DataAccessException;
-import dataAccess.MemoryAuthDAO;
+import dataAccessTests.AuthDAO;
+import dataAccessTests.DataAccessException;
+import dataAccessTests.MemoryAuthDAO;
 import model.AuthData;
 
 import java.nio.charset.StandardCharsets;

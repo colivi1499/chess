@@ -2,11 +2,10 @@ package handlers;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import dataAccess.SqlUserDAO;
+import dataAccessTests.SqlUserDAO;
 import error.ErrorMessage;
 import request.JoinGameRequest;
-import service.GameService;
-import service.UserService;
+import serviceTests.UserService;
 import spark.Request;
 import spark.Response;
 import spark.Route;

@@ -1,14 +1,11 @@
-package service;
+package serviceTests;
 
 import chess.ChessGame;
-import com.google.gson.Gson;
-import dataAccess.*;
+import dataAccessTests.*;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import javax.xml.crypto.Data;
 
 public class UserService {
     UserDAO userDAO;

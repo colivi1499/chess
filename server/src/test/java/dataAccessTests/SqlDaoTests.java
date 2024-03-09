@@ -1,4 +1,4 @@
-package dataAccess;
+package dataAccessTests;
 
 import chess.ChessGame;
 import model.AuthData;

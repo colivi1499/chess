@@ -1,9 +1,7 @@
-package dataAccess;
+package dataAccessTests;
 
-import com.google.gson.Gson;
 import model.AuthData;
 
-import javax.xml.crypto.Data;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
