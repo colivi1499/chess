@@ -4,6 +4,8 @@ import chess.ChessGame;
 import chess.PawnMovesCalculator;
 import com.google.gson.Gson;
 import dataAccess.AuthDAO;
+import dataAccess.SqlAuthDAO;
+import dataAccess.SqlGameDAO;
 import error.ErrorMessage;
 import org.eclipse.jetty.server.Authentication;
 import request.JoinGameRequest;
@@ -22,7 +24,7 @@ public class ListGamesHandler implements Route {
         var serializer = new Gson();
         String authToken = request.headers("authorization");
         try {
-            AuthService authService = new AuthService();
+            AuthService authService = new AuthService(new SqlAuthDAO());
             authService.authDAO.getAuth(authToken);
         } catch (Exception e) {
             response.status(401);
@@ -30,7 +32,7 @@ public class ListGamesHandler implements Route {
         }
 
         //Call the correct service
-        GameService gameService = new GameService();
+        GameService gameService = new GameService(new SqlGameDAO());
         ListGamesResult result = new ListGamesResult(gameService.listGames());
         //Analyze the result from the service and set the correct status code
         response.status(200);

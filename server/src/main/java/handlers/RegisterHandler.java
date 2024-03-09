@@ -3,6 +3,7 @@ package handlers;
 import com.google.gson.Gson;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
+import dataAccess.SqlUserDAO;
 import error.ErrorMessage;
 import model.AuthData;
 import model.UserData;
@@ -19,7 +20,7 @@ public class RegisterHandler implements Route {
         UserData user = serializer.fromJson(request.body(), UserData.class);
         AuthData registerResult = new AuthData("","");
         //Call the correct service
-        UserService userService = new UserService();
+        UserService userService = new UserService(new SqlUserDAO());
 
         if (user.username() == null || user.password() == null) {
             response.status(400);

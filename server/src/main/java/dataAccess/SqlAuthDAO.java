@@ -44,6 +44,7 @@ public class SqlAuthDAO implements AuthDAO {
     public void deleteAuth(String authToken) throws DataAccessException {
         var statement = "DELETE FROM authData WHERE authToken=?";
         try {
+            getAuth(authToken);
             executeUpdate(statement, authToken);
         } catch (DataAccessException e) {
             throw new DataAccessException("Invalid authToken");

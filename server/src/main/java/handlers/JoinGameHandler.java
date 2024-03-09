@@ -2,6 +2,7 @@ package handlers;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import dataAccess.SqlUserDAO;
 import error.ErrorMessage;
 import request.JoinGameRequest;
 import service.GameService;
@@ -21,7 +22,7 @@ public class JoinGameHandler implements Route {
         String authToken = request.headers("authorization");
 
         //Call the correct service
-        UserService userService = new UserService();
+        UserService userService = new UserService(new SqlUserDAO());
         ChessGame.TeamColor color;
         if (Objects.equals(req.playerColor(), "WHITE")) {
             color = ChessGame.TeamColor.WHITE;

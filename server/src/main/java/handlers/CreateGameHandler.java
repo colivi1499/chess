@@ -2,6 +2,7 @@ package handlers;
 
 import chess.PawnMovesCalculator;
 import com.google.gson.Gson;
+import dataAccess.SqlGameDAO;
 import error.ErrorMessage;
 import model.AuthData;
 import model.UserData;
@@ -27,7 +28,7 @@ public class CreateGameHandler implements Route {
             return serializer.toJson(new ErrorMessage("Error: bad request"));
         }
 
-        GameService gameService = new GameService();
+        GameService gameService = new GameService(new SqlGameDAO());
         int createGameResult = 0;
         try {
             createGameResult = gameService.createGame(req.gameName(),authToken);

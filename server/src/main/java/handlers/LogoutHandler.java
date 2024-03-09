@@ -2,6 +2,7 @@ package handlers;
 
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
+import dataAccess.SqlUserDAO;
 import error.ErrorMessage;
 import model.AuthData;
 import model.UserData;
@@ -18,7 +19,7 @@ public class LogoutHandler implements Route {
         String authToken = request.headers("authorization");
 
         //Call the correct service
-        UserService userService = new UserService();
+        UserService userService = new UserService(new SqlUserDAO());
         try {
             userService.logout(authToken);
         } catch (DataAccessException e) {
