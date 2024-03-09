@@ -7,6 +7,8 @@ import model.GameData;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -52,8 +54,21 @@ public class SqlGameDAO implements GameDAO {
     }
 
     @Override
-    public Map<Integer, GameData> listGames() {
-        return null;
+    public Map<Integer, GameData> listGames() throws DataAccessException {
+        var result = new HashMap<Integer, GameData>();
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT gameID, gameData FROM games";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        result.put(readGame(rs).gameID(),readGame(rs));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
+        return result;
     }
 
     @Override

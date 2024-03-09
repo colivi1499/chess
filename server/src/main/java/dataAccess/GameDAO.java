@@ -12,7 +12,7 @@ public interface GameDAO {
 
     GameData getGame(int gameID) throws DataAccessException;
 
-    Map<Integer,GameData> listGames();
+    Map<Integer,GameData> listGames() throws DataAccessException;
 
     void updateGame(int gameID, GameData newGame) throws DataAccessException;
 

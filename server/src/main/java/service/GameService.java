@@ -27,7 +27,7 @@ public class GameService {
         return gameDAO.createGame(gameName,authToken);
     }
 
-    public Collection<GameResult> listGames() {
+    public Collection<GameResult> listGames() throws DataAccessException {
         Collection<GameResult> listGamesResult = new ArrayList<>();
         for (GameData gameData : gameDAO.listGames().values()) {
             listGamesResult.add(new GameResult(gameData.gameID(),gameData.whiteUsername(), gameData.blackUsername(),gameData.gameName()));
