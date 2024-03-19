@@ -1,11 +1,11 @@
 package handlers;
 
 import com.google.gson.Gson;
-import dataAccessTests.SqlGameDAO;
+import dataAccess.SqlGameDAO;
 import error.ErrorMessage;
 import request.CreateGameRequest;
 import result.CreateGameResult;
-import serviceTests.GameService;
+import service.GameService;
 import spark.Request;
 import spark.Response;
 import spark.Route;

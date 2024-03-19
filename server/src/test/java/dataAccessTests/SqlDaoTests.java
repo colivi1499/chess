@@ -1,6 +1,10 @@
 package dataAccessTests;
 
 import chess.ChessGame;
+import dataAccess.DataAccessException;
+import dataAccess.SqlAuthDAO;
+import dataAccess.SqlGameDAO;
+import dataAccess.SqlUserDAO;
 import model.AuthData;
 import model.GameData;
 import model.UserData;

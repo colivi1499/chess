@@ -1,12 +1,12 @@
 package handlers;
 
 import com.google.gson.Gson;
-import dataAccessTests.DataAccessException;
-import dataAccessTests.SqlUserDAO;
+import dataAccess.DataAccessException;
+import dataAccess.SqlUserDAO;
 import error.ErrorMessage;
 import model.AuthData;
 import model.UserData;
-import serviceTests.UserService;
+import service.UserService;
 import spark.Request;
 import spark.Response;
 import spark.Route;

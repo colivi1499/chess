@@ -1,12 +1,12 @@
 package handlers;
 
 import com.google.gson.Gson;
-import dataAccessTests.SqlAuthDAO;
-import dataAccessTests.SqlGameDAO;
+import dataAccess.SqlAuthDAO;
+import dataAccess.SqlGameDAO;
 import error.ErrorMessage;
 import result.ListGamesResult;
-import serviceTests.AuthService;
-import serviceTests.GameService;
+import service.AuthService;
+import service.GameService;
 import spark.Request;
 import spark.Response;
 import spark.Route;

@@ -1,4 +1,4 @@
-package dataAccessTests;
+package dataAccess;
 
 import java.sql.*;
 import java.util.Properties;

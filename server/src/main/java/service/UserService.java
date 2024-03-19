@@ -1,7 +1,7 @@
-package serviceTests;
+package service;
 
 import chess.ChessGame;
-import dataAccessTests.*;
+import dataAccess.*;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -10,7 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class UserService {
     UserDAO userDAO;
     AuthService authService;
-    GameService gameService;
+    public GameService gameService;
 
     public UserService() {
         this(new MemoryUserDAO(), new AuthService(), new GameService());

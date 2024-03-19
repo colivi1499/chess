@@ -1,12 +1,15 @@
 package serviceTests;
 
 import chess.ChessGame;
-import dataAccessTests.DataAccessException;
-import dataAccessTests.MemoryAuthDAO;
-import dataAccessTests.MemoryGameDAO;
-import dataAccessTests.MemoryUserDAO;
+import dataAccess.DataAccessException;
+import dataAccess.MemoryAuthDAO;
+import dataAccess.MemoryGameDAO;
+import dataAccess.MemoryUserDAO;
 import model.UserData;
 import org.junit.jupiter.api.*;
+import service.AuthService;
+import service.GameService;
+import service.UserService;
 
 import static org.junit.jupiter.api.Assertions.*;
 

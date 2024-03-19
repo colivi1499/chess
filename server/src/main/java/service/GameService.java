@@ -1,8 +1,8 @@
-package serviceTests;
+package service;
 
-import dataAccessTests.DataAccessException;
-import dataAccessTests.GameDAO;
-import dataAccessTests.MemoryGameDAO;
+import dataAccess.DataAccessException;
+import dataAccess.GameDAO;
+import dataAccess.MemoryGameDAO;
 import model.GameData;
 import result.GameResult;
 

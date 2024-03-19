@@ -1,4 +1,4 @@
-package dataAccessTests;
+package dataAccess;
 
 import model.UserData;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
