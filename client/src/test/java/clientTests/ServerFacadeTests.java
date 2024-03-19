@@ -1,6 +1,7 @@
 package clientTests;
 
 import dataAccess.DataAccessException;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import org.junit.jupiter.api.*;
 import server.Server;
 import serverFacade.ServerFacade;
@@ -56,5 +57,18 @@ public class ServerFacadeTests {
         Assertions.assertThrows(DataAccessException.class, () -> facade.login("SomeoneElse2", "a wrong password"));
         Assertions.assertThrows(DataAccessException.class, () -> facade.login("Not a user", "Password12345"));
     }
+
+    @Test
+    public void logout() throws DataAccessException {
+        var authData = facade.register("SomeoneElse2","Password123", "johndoe@gmail.com");
+        facade.logout(authData.authToken());
+        Assertions.assertDoesNotThrow(() -> facade.login("SomeoneElse2", "Password123"));
+    }
+
+    @Test
+    public void badLogout() throws DataAccessException {
+        Assertions.assertThrows(DataAccessException.class, () -> facade.logout("bad authtoken"));
+    }
+
 
 }

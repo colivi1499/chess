@@ -7,11 +7,14 @@ import model.UserData;
 import server.Server;
 
 import javax.xml.crypto.Data;
+import java.awt.color.ICC_ColorSpace;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.*;
+import java.net.http.HttpRequest;
+
 
 public class ServerFacade {
 
@@ -25,27 +28,36 @@ public class ServerFacade {
 
     public AuthData register(String username, String password, String email) throws DataAccessException {
         var path = "/user";
-        return this.makeRequest("POST", path, new UserData(username, password, email), AuthData.class);
+        return this.makeRequest("POST", path, new UserData(username, password, email), AuthData.class, null);
     }
 
     public void clear() throws DataAccessException {
         var path = "/db";
-        this.makeRequest("DELETE", path, null, null);
+        this.makeRequest("DELETE", path, null, null, null);
     }
 
     public AuthData login(String username, String password) throws DataAccessException {
         var path = "/session";
-        return this.makeRequest("POST", path, new UserData(username, password, null), AuthData.class);
+        return this.makeRequest("POST", path, new UserData(username, password, null), AuthData.class, null);
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws DataAccessException {
+    public void logout(String authToken) throws DataAccessException {
+        var path = "/session";
+        this.makeRequest("DELETE", path, null, null, authToken);
+    }
+
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws DataAccessException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
 
-            writeBody(request,http);
+            if (authToken != null) {
+                http.setRequestProperty("authorization", authToken);
+            } else {
+                writeBody(request,http);
+            }
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
