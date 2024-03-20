@@ -1,9 +1,13 @@
 package serverFacade;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
+import request.CreateGameRequest;
+import request.JoinGameRequest;
+import result.CreateGameResult;
 import result.ListGamesResult;
 
 import java.io.IOException;
@@ -43,14 +47,14 @@ public class ServerFacade {
         this.makeRequest("DELETE", path, null, null, authToken);
     }
 
-    public void createGame(String authToken) throws DataAccessException {
+    public CreateGameResult createGame(String gameName, String authToken) throws DataAccessException {
         var path = "/game";
-        this.makeRequest("POST", path, null, ListGamesResult.class, authToken);
+        return this.makeRequest("POST", path, new CreateGameRequest(gameName), CreateGameResult.class, authToken);
     }
 
-    public void joinGame(String authToken) throws DataAccessException {
+    public void joinGame(String playerColor, int gameId, String authToken) throws DataAccessException {
         var path = "/game";
-        this.makeRequest("PUT", path, null, ListGamesResult.class, authToken);
+        this.makeRequest("PUT", path, new JoinGameRequest(playerColor, gameId), null, authToken);
     }
 
     public ListGamesResult listGames(String authToken) throws DataAccessException {
@@ -67,7 +71,7 @@ public class ServerFacade {
 
             if (authToken != null) {
                 http.setRequestProperty("authorization", authToken);
-            } else {
+            } if (request != null) {
                 writeBody(request,http);
             }
             http.connect();

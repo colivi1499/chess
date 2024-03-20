@@ -3,6 +3,8 @@ package clientTests;
 import dataAccess.DataAccessException;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import org.junit.jupiter.api.*;
+import result.CreateGameResult;
+import result.ListGamesResult;
 import server.Server;
 import serverFacade.ServerFacade;
 
@@ -72,16 +74,24 @@ public class ServerFacadeTests {
 
     @Test
     public void createGame() throws DataAccessException {
-        Assertions.assertThrows(DataAccessException.class, () -> facade.logout("bad authtoken"));
+        var authData = facade.register("SomeoneElse2","Password123", "johndoe@gmail.com");
+        CreateGameResult game = facade.createGame("game1",authData.authToken());
+        Assertions.assertTrue(game.gameID() > 1000);
     }
 
     @Test
     public void joinGame() throws DataAccessException {
-        Assertions.assertThrows(DataAccessException.class, () -> facade.logout("bad authtoken"));
+        var authData = facade.register("SomeoneElse2","Password123", "johndoe@gmail.com");
+        CreateGameResult game = facade.createGame("game1",authData.authToken());
+        Assertions.assertDoesNotThrow(() -> facade.joinGame("BLACK", game.gameID(), authData.authToken()));
     }
     @Test
     public void listGames() throws DataAccessException {
-        Assertions.assertThrows(DataAccessException.class, () -> facade.logout("bad authtoken"));
+        var authData = facade.register("SomeoneElse2","Password123", "johndoe@gmail.com");
+        CreateGameResult game = facade.createGame("game1",authData.authToken());
+        CreateGameResult game2 = facade.createGame("game2", authData.authToken());
+        ListGamesResult result = facade.listGames(authData.authToken());
+        Assertions.assertEquals(result.games().size(), 2);
     }
 
 
