@@ -70,5 +70,19 @@ public class ServerFacadeTests {
         Assertions.assertThrows(DataAccessException.class, () -> facade.logout("bad authtoken"));
     }
 
+    @Test
+    public void createGame() throws DataAccessException {
+        Assertions.assertThrows(DataAccessException.class, () -> facade.logout("bad authtoken"));
+    }
+
+    @Test
+    public void joinGame() throws DataAccessException {
+        Assertions.assertThrows(DataAccessException.class, () -> facade.logout("bad authtoken"));
+    }
+    @Test
+    public void listGames() throws DataAccessException {
+        Assertions.assertThrows(DataAccessException.class, () -> facade.logout("bad authtoken"));
+    }
+
 
 }

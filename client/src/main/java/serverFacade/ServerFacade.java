@@ -4,16 +4,13 @@ import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
-import server.Server;
+import result.ListGamesResult;
 
-import javax.xml.crypto.Data;
-import java.awt.color.ICC_ColorSpace;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.*;
-import java.net.http.HttpRequest;
 
 
 public class ServerFacade {
@@ -44,6 +41,21 @@ public class ServerFacade {
     public void logout(String authToken) throws DataAccessException {
         var path = "/session";
         this.makeRequest("DELETE", path, null, null, authToken);
+    }
+
+    public void createGame(String authToken) throws DataAccessException {
+        var path = "/game";
+        this.makeRequest("POST", path, null, ListGamesResult.class, authToken);
+    }
+
+    public void joinGame(String authToken) throws DataAccessException {
+        var path = "/game";
+        this.makeRequest("PUT", path, null, ListGamesResult.class, authToken);
+    }
+
+    public ListGamesResult listGames(String authToken) throws DataAccessException {
+        var path = "/game";
+        return this.makeRequest("GET", path, null, ListGamesResult.class, authToken);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws DataAccessException {
