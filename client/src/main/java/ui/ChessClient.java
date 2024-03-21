@@ -1,11 +1,13 @@
 package ui;
 
+import dataAccess.DataAccessException;
 import serverFacade.ServerFacade;
 
 import java.util.Arrays;
 
 
 public class ChessClient {
+    private String visitorName = null;
 
     private final int port;
     private final ServerFacade server;
@@ -24,7 +26,7 @@ public class ChessClient {
             return "1. Help\n2. Logout\n3. Create Game\n4. List Games\n5. Join Game\n6. Join Observer";
     }
 
-    public String eval(String input) {
+    public String eval(String input) throws ArgumentException, DataAccessException {
         var tokens = input.toLowerCase().split(" ");
         var cmd = (tokens.length > 0) ? tokens[0] : "help";
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
@@ -32,8 +34,8 @@ public class ChessClient {
             return switch (cmd) {
                 case "1", "help" -> help();
                 case "2", "quit" -> "quit";
-                case "3", "login" -> login();
-                case "4", "register" -> register();
+                case "3", "login" -> login(params);
+                case "4", "register" -> register(params);
                 default -> help();
             };
         } else {
@@ -49,31 +51,44 @@ public class ChessClient {
         }
     }
 
-    public String login() {
-        return "";
+    public String login(String... params) throws DataAccessException, ArgumentException {
+        if (params.length == 2) {
+            visitorName = params[0];
+            server.login(visitorName, params[1]);
+            state = State.SIGNEDIN;
+            return String.format("You signed in as %s.", visitorName);
+        }
+        throw new ArgumentException("Sign in with: 3 <username> <password>");
     }
 
-    public String register() {
-        return "";
+    public String register(String... params) throws DataAccessException, ArgumentException {
+        if (params.length == 3) {
+            visitorName = params[0];
+            server.register(visitorName, params[1], params[2]);
+            state = State.SIGNEDIN;
+            return String.format("You registered as %s.", visitorName);
+        }
+        throw new ArgumentException("Register with: 4 <username> <password> <email>");
     }
 
     public String logout() {
-        return "";
+        state = State.SIGNEDOUT;
+        return "logged out";
     }
 
     public String createGame() {
-        return "";
+        return "created game";
     }
 
     public String listGames() {
-        return "";
+        return "listed games";
     }
 
     public String joinGame() {
-        return "";
+        return "joined game";
     }
 
     public String joinObserver() {
-        return "";
+        return "joined game as observer";
     }
 }
