@@ -1,6 +1,8 @@
 package ui;
 
 
+import spark.Spark;
+
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
@@ -13,8 +15,7 @@ public class Repl {
     }
 
     public void run() {
-        System.out.println("Welcome to the chess application. Type Help for options.");
-        System.out.print(client.help());
+        System.out.println(BLACK_PAWN + " Welcome to 240 chess. Type Help to get started. " + BLACK_PAWN);
 
         Scanner scanner = new Scanner(System.in);
         var result = "";

@@ -1,13 +1,18 @@
 package ui;
 
 import dataAccess.DataAccessException;
+import model.AuthData;
 import serverFacade.ServerFacade;
 
 import java.util.Arrays;
 
+import static ui.EscapeSequences.SET_TEXT_COLOR_BLUE;
+import static ui.EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
+
 
 public class ChessClient {
     private String visitorName = null;
+    private AuthData authData = null;
 
     private final int port;
     private final ServerFacade server;
@@ -21,7 +26,8 @@ public class ChessClient {
     }
     public String help() {
         if (state == State.SIGNEDOUT)
-            return "1. Help\n2. Quit\n3. Login\n4. Register\n";
+            return String.format("1. Help %s- with possible commands%s\n2. Quit %s- playing chess%s\n3. Login <username> <password> %s- to play chess%s\n4. Register <username> <password> <email> %s- to create an account%s\n",
+                    SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE);
         else
             return "1. Help\n2. Logout\n3. Create Game\n4. List Games\n5. Join Game\n6. Join Observer";
     }
@@ -54,7 +60,7 @@ public class ChessClient {
     public String login(String... params) throws DataAccessException, ArgumentException {
         if (params.length == 2) {
             visitorName = params[0];
-            server.login(visitorName, params[1]);
+            authData = server.login(visitorName, params[1]);
             state = State.SIGNEDIN;
             return String.format("You signed in as %s.", visitorName);
         }
@@ -64,16 +70,17 @@ public class ChessClient {
     public String register(String... params) throws DataAccessException, ArgumentException {
         if (params.length == 3) {
             visitorName = params[0];
-            server.register(visitorName, params[1], params[2]);
+            authData = server.register(visitorName, params[1], params[2]);
             state = State.SIGNEDIN;
             return String.format("You registered as %s.", visitorName);
         }
         throw new ArgumentException("Register with: 4 <username> <password> <email>");
     }
 
-    public String logout() {
+    public String logout() throws DataAccessException {
+        server.logout(authData.authToken());
         state = State.SIGNEDOUT;
-        return "logged out";
+        return String.format("Logged out %s.", visitorName);
     }
 
     public String createGame() {

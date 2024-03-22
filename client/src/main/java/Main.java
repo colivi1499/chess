@@ -7,7 +7,7 @@ public class Main {
         var serverUrl = "http://localhost:8080";
         Server server = new Server();
         var port = server.run(0);
-        System.out.println("Started test HTTP server on " + port);
+        System.out.println("Started HTTP server on " + port);
         if (args.length == 1) {
             serverUrl = args[0];
         }
