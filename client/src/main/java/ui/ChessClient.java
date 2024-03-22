@@ -1,5 +1,6 @@
 package ui;
 
+import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.AuthData;
 import serverFacade.ServerFacade;
@@ -87,8 +88,8 @@ public class ChessClient {
         return "created game";
     }
 
-    public String listGames() {
-        return "listed games";
+    public String listGames() throws DataAccessException {
+        return new Gson().toJson(server.listGames(authData.authToken()));
     }
 
     public String joinGame() {
