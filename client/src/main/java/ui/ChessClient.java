@@ -60,7 +60,7 @@ public class ChessClient {
                 case "3", "create" -> createGame(params);
                 case "4", "list" -> listGames();
                 case "5", "join" -> joinGame(params);
-                case "6", "joinobserver" -> joinObserver();
+                case "6", "joinobserver" -> joinObserver(params);
                 default -> help();
             };
         }
@@ -101,8 +101,9 @@ public class ChessClient {
     }
 
     public String listGames() throws DataAccessException {
-        Gson serializer = new Gson();
         ListGamesResult listGamesResult = server.listGames(authData.authToken());
+        if (listGamesResult.games().isEmpty())
+            return "There are no games in the database";
         String list = "";
         int i = 1;
         games.clear();
@@ -147,8 +148,8 @@ public class ChessClient {
             }
             int gameId = games.get(gameNumber - 1).gameID();
             server.joinGame(null, gameId, authData.authToken());
-            return String.format("You joined game %d.", gameId);
-        }
-        throw new ArgumentException("Join as an observer with: 6 <game ID>");
+            return String.format("You joined game %d as an observer.", gameId);
+        } else
+            throw new ArgumentException("Join as an observer with: 6 <game ID>");
     }
 }

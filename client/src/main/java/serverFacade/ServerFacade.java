@@ -1,6 +1,7 @@
 package serverFacade;
 
 import chess.ChessGame;
+import chess.PawnMovesCalculator;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.AuthData;
@@ -29,7 +30,11 @@ public class ServerFacade {
 
     public AuthData register(String username, String password, String email) throws DataAccessException {
         var path = "/user";
-        return this.makeRequest("POST", path, new UserData(username, password, email), AuthData.class, null);
+        try {
+            return this.makeRequest("POST", path, new UserData(username, password, email), AuthData.class, null);
+        } catch (DataAccessException e) {
+            throw new DataAccessException("Username is already taken");
+        }
     }
 
     public void clear() throws DataAccessException {
@@ -71,7 +76,16 @@ public class ServerFacade {
 
     public void joinGame(String playerColor, int gameId, String authToken) throws DataAccessException {
         var path = "/game";
-        this.makeRequest("PUT", path, new JoinGameRequest(playerColor, gameId), null, authToken);
+        try {
+            this.makeRequest("PUT", path, new JoinGameRequest(playerColor, gameId), null, authToken);
+        } catch (DataAccessException e) {
+            switch(e.getMessage()) {
+                case "failure: 403":
+                    throw new DataAccessException("There is already a player in that spot");
+                default: throw new DataAccessException("Unable to join game");
+            }
+        }
+
     }
 
     public ListGamesResult listGames(String authToken) throws DataAccessException {
