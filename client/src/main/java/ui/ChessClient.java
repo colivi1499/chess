@@ -105,7 +105,9 @@ public class ChessClient {
         ListGamesResult listGamesResult = server.listGames(authData.authToken());
         String list = "";
         int i = 1;
+        games.clear();
         for (GameResult gameResult : listGamesResult.games()) {
+            games.add(gameResult);
             list += String.format("%d. %s\n", i, gameResult);
             i++;
         }
@@ -114,17 +116,39 @@ public class ChessClient {
 
     public String joinGame(String... params) throws ArgumentException, DataAccessException {
         if (params.length == 1) {
-            server.joinGame(null, Integer.parseInt(params[0]), authData.authToken() );
-            return String.format("You joined the game %s.", params[0]);
+            int gameNumber = Integer.parseInt(params[0]);
+            if (gameNumber < 1 || gameNumber > games.size()) {
+                throw new ArgumentException("Invalid game number");
+            }
+            int gameId = games.get(gameNumber - 1).gameID();
+            server.joinGame(null, gameId, authData.authToken());
+            return String.format("You joined game %d.", gameId);
         } else if (params.length == 2) {
-            server.joinGame(params[1], Integer.parseInt(params[0]), authData.authToken());
-            return String.format("You joined the game %s.", params[0]);
+            int gameNumber = Integer.parseInt(params[0]);
+            if (gameNumber < 1 || gameNumber > games.size()) {
+                throw new ArgumentException("Invalid game number");
+            }
+            int gameId = games.get(gameNumber - 1).gameID();
+            if (params[1].equals("white"))
+                server.joinGame("WHITE", gameId, authData.authToken());
+            else if (params[1].equals("black"))
+                server.joinGame("BLACK", gameId, authData.authToken());
+            else throw new ArgumentException("Please enter WHITE or BLACK");
+            return String.format("You joined game %d", gameId);
         }
         throw new ArgumentException("Join game with: 5 <game ID> <WHITE|BLACK|<empty>>");
     }
 
-    public String joinObserver(String... params) throws DataAccessException {
-        server.joinGame(null, Integer.parseInt(params[0]), authData.authToken() );
-        return String.format("You joined the game %s.", params[0]);
+    public String joinObserver(String... params) throws DataAccessException, ArgumentException {
+        if (params.length == 1) {
+            int gameNumber = Integer.parseInt(params[0]);
+            if (gameNumber < 1 || gameNumber > games.size()) {
+                throw new ArgumentException("Invalid game number");
+            }
+            int gameId = games.get(gameNumber - 1).gameID();
+            server.joinGame(null, gameId, authData.authToken());
+            return String.format("You joined game %d.", gameId);
+        }
+        throw new ArgumentException("Join as an observer with: 6 <game ID>");
     }
 }

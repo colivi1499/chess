@@ -32,6 +32,8 @@ public class Repl {
                 System.out.print(msg);
             }
         }
+        Spark.stop();
+        Spark.awaitStop();
         System.out.println();
     }
 
