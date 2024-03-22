@@ -4,9 +4,14 @@ import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.AuthData;
 import result.CreateGameResult;
+import result.GameResult;
+import result.ListGamesResult;
 import serverFacade.ServerFacade;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static ui.EscapeSequences.SET_TEXT_COLOR_BLUE;
 import static ui.EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
@@ -15,6 +20,8 @@ import static ui.EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
 public class ChessClient {
     private String visitorName = null;
     private AuthData authData = null;
+    private static ArrayList<GameResult> games = new ArrayList<>();
+
 
     private final int port;
     private final ServerFacade server;
@@ -94,7 +101,15 @@ public class ChessClient {
     }
 
     public String listGames() throws DataAccessException {
-        return new Gson().toJson(server.listGames(authData.authToken()));
+        Gson serializer = new Gson();
+        ListGamesResult listGamesResult = server.listGames(authData.authToken());
+        String list = "";
+        int i = 1;
+        for (GameResult gameResult : listGamesResult.games()) {
+            list += String.format("%d. %s\n", i, gameResult);
+            i++;
+        }
+        return list;
     }
 
     public String joinGame(String... params) throws ArgumentException, DataAccessException {

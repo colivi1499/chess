@@ -65,7 +65,7 @@ public class ServerFacade {
         try {
             return this.makeRequest("POST", path, new CreateGameRequest(gameName), CreateGameResult.class, authToken);
         } catch (DataAccessException e) {
-            throw new DataAccessException("Unauthorized logout");
+            throw new DataAccessException("Unable to create game");
         }
     }
 

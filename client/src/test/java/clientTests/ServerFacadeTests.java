@@ -29,6 +29,7 @@ public class ServerFacadeTests {
 
     @AfterAll
     static void stopServer() throws DataAccessException {
+        facade.clear();
         server.stop();
     }
 
@@ -90,7 +91,9 @@ public class ServerFacadeTests {
         var authData = facade.register("SomeoneElse2","Password123", "johndoe@gmail.com");
         CreateGameResult game = facade.createGame("game1",authData.authToken());
         CreateGameResult game2 = facade.createGame("game2", authData.authToken());
+        facade.joinGame("BLACK", game.gameID(), authData.authToken());
         ListGamesResult result = facade.listGames(authData.authToken());
+        System.out.println(result);
         Assertions.assertEquals(result.games().size(), 2);
     }
 
