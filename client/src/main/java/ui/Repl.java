@@ -1,6 +1,7 @@
 package ui;
 
 
+import dataAccess.DataAccessException;
 import spark.Spark;
 
 import java.util.Scanner;
@@ -26,8 +27,8 @@ public class Repl {
             try {
                 result = client.eval(line);
                 System.out.print(SET_TEXT_COLOR_BLUE + result);
-            } catch (Throwable e) {
-                var msg = e.toString();
+            } catch (DataAccessException | ArgumentException e) {
+                var msg = e.getMessage();
                 System.out.print(msg);
             }
         }

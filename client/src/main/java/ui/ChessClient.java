@@ -3,6 +3,7 @@ package ui;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.AuthData;
+import result.CreateGameResult;
 import serverFacade.ServerFacade;
 
 import java.util.Arrays;
@@ -49,10 +50,10 @@ public class ChessClient {
             return switch (cmd) {
                 case "1", "help" -> help();
                 case "2", "logout" -> logout();
-                case "3", "create game" -> createGame();
-                case "4", "list games" -> listGames();
-                case "5", "join game" -> joinGame();
-                case "6", "join observer" -> joinObserver();
+                case "3", "create" -> createGame(params);
+                case "4", "list" -> listGames();
+                case "5", "join" -> joinGame(params);
+                case "6", "joinobserver" -> joinObserver();
                 default -> help();
             };
         }
@@ -84,19 +85,31 @@ public class ChessClient {
         return String.format("Logged out %s.", visitorName);
     }
 
-    public String createGame() {
-        return "created game";
+    public String createGame(String... params) throws ArgumentException, DataAccessException {
+        if (params.length == 1) {
+            CreateGameResult game = server.createGame(params[0], authData.authToken());
+            return String.format("You created the game %s.", new Gson().toJson(game));
+        }
+        throw new ArgumentException("Create game with: 3 <game name>");
     }
 
     public String listGames() throws DataAccessException {
         return new Gson().toJson(server.listGames(authData.authToken()));
     }
 
-    public String joinGame() {
-        return "joined game";
+    public String joinGame(String... params) throws ArgumentException, DataAccessException {
+        if (params.length == 1) {
+            server.joinGame(null, Integer.parseInt(params[0]), authData.authToken() );
+            return String.format("You joined the game %s.", params[0]);
+        } else if (params.length == 2) {
+            server.joinGame(params[1], Integer.parseInt(params[0]), authData.authToken());
+            return String.format("You joined the game %s.", params[0]);
+        }
+        throw new ArgumentException("Join game with: 5 <game ID> <WHITE|BLACK|<empty>>");
     }
 
-    public String joinObserver() {
-        return "joined game as observer";
+    public String joinObserver(String... params) throws DataAccessException {
+        server.joinGame(null, Integer.parseInt(params[0]), authData.authToken() );
+        return String.format("You joined the game %s.", params[0]);
     }
 }

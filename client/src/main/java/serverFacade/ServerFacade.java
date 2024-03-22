@@ -39,17 +39,34 @@ public class ServerFacade {
 
     public AuthData login(String username, String password) throws DataAccessException {
         var path = "/session";
-        return this.makeRequest("POST", path, new UserData(username, password, null), AuthData.class, null);
+        try {
+            return this.makeRequest("POST", path, new UserData(username, password, null), AuthData.class, null);
+        } catch (DataAccessException e) {
+            switch(e.getMessage()) {
+                case "failure: 401":
+                case "failure: 403":
+                    throw new DataAccessException("Username or password is incorrect");
+                default: throw new DataAccessException("Invalid login");
+            }
+        }
     }
 
     public void logout(String authToken) throws DataAccessException {
         var path = "/session";
-        this.makeRequest("DELETE", path, null, null, authToken);
+        try {
+            this.makeRequest("DELETE", path, null, null, authToken);
+        } catch (DataAccessException e) {
+            throw new DataAccessException("Unauthorized logout");
+        }
     }
 
     public CreateGameResult createGame(String gameName, String authToken) throws DataAccessException {
         var path = "/game";
-        return this.makeRequest("POST", path, new CreateGameRequest(gameName), CreateGameResult.class, authToken);
+        try {
+            return this.makeRequest("POST", path, new CreateGameRequest(gameName), CreateGameResult.class, authToken);
+        } catch (DataAccessException e) {
+            throw new DataAccessException("Unauthorized logout");
+        }
     }
 
     public void joinGame(String playerColor, int gameId, String authToken) throws DataAccessException {
