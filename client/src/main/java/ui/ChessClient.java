@@ -124,8 +124,8 @@ public class ChessClient {
             }
             int gameId = games.get(gameNumber - 1).gameID();
             server.joinGame(null, gameId, authData.authToken());
-            System.out.println(new ChessBoardUI(new ChessBoard()).printBoard());
-            System.out.println(new ChessBoardUI(new ChessBoard()).printBoard());
+            System.out.println(new ChessBoardUI(new ChessBoard()).printBoard(false));
+            System.out.println(new ChessBoardUI(new ChessBoard()).printBoard(true));
             return String.format("You joined game %d.", gameId);
         } else if (params.length == 2) {
             int gameNumber = Integer.parseInt(params[0]);
@@ -135,11 +135,11 @@ public class ChessClient {
             int gameId = games.get(gameNumber - 1).gameID();
             if (params[1].equals("white")) {
                 server.joinGame("WHITE", gameId, authData.authToken());
-                System.out.println(new ChessBoardUI(new ChessBoard()).printBoard());
+                System.out.println(new ChessBoardUI(new ChessBoard()).printBoard(false));
             }
             else if (params[1].equals("black")) {
                 server.joinGame("BLACK", gameId, authData.authToken());
-                System.out.println(new ChessBoardUI(new ChessBoard()).printBoard());
+                System.out.println(new ChessBoardUI(new ChessBoard()).printBoard(true));
             }
 
             else throw new ArgumentException("Please enter WHITE or BLACK");
@@ -156,6 +156,8 @@ public class ChessClient {
             }
             int gameId = games.get(gameNumber - 1).gameID();
             server.joinGame(null, gameId, authData.authToken());
+            System.out.println(new ChessBoardUI(new ChessBoard()).printBoard(false));
+            System.out.println(new ChessBoardUI(new ChessBoard()).printBoard(true));
             return String.format("You joined game %d as an observer.", gameId);
         } else
             throw new ArgumentException("Join as an observer with: 6 <game ID>");

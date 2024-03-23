@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessBoard;
+import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
 
@@ -14,8 +15,11 @@ public class ChessBoardUI {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 String piece = " ";
-                ChessPiece pieceToCheck = chessBoard.getPiece(new ChessPosition(i + 1,j + 1));
+                ChessPiece pieceToCheck = chessBoard.getPiece(new ChessPosition(i + 1,8 - j));
+                boolean isWhite = false;
                 if (pieceToCheck != null) {
+                    if (pieceToCheck.getTeamColor() == ChessGame.TeamColor.WHITE)
+                        isWhite = true;
                     switch(pieceToCheck.getPieceType()) {
                         case ChessPiece.PieceType.KING:
                             piece = "K";
@@ -38,29 +42,44 @@ public class ChessBoardUI {
                     }
                 }
                 if ((i + j) % 2 == 0)
-                    board[i][j] = drawWhiteSquare(piece);
+                    board[i][j] = drawWhiteSquare(piece, isWhite);
                 else
-                    board[i][j] = drawBlackSquare(piece);
+                    board[i][j] = drawBlackSquare(piece, isWhite);
             }
         }
     }
 
-    public String printBoard() {
+    public String printBoard(boolean blackView) {
         String result = "";
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                result += board[i][j];
+        if (blackView) {
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    result += board[i][j];
+                }
+                result += SET_BG_COLOR_BLACK + "\n";
             }
-            result += SET_BG_COLOR_BLACK + "\n";
+        } else {
+            for (int i = 7; i >= 0; i--) {
+                for (int j = 7; j >= 0; j--) {
+                    result += board[i][j];
+                }
+                result += SET_BG_COLOR_BLACK + "\n";
+            }
         }
         return result;
     }
 
-    private String drawWhiteSquare(String piece) {
-        return String.format("%s %s ", SET_BG_COLOR_WHITE, piece);
+    private String drawWhiteSquare(String piece, boolean white) {
+        if (white)
+            return String.format("%s %s%s ", SET_BG_COLOR_WHITE, SET_TEXT_COLOR_RED, piece);
+        else
+            return String.format("%s %s%s ", SET_BG_COLOR_WHITE, SET_TEXT_COLOR_BLACK, piece);
     }
 
-    private String drawBlackSquare(String piece) {
-        return String.format("%s %s ", SET_BG_COLOR_LIGHT_GREY, piece);
+    private String drawBlackSquare(String piece, boolean white) {
+        if (white)
+            return String.format("%s %s%s ", SET_BG_COLOR_LIGHT_GREY, SET_TEXT_COLOR_RED, piece);
+        else
+            return String.format("%s %s%s ", SET_BG_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLACK, piece);
     }
 }
