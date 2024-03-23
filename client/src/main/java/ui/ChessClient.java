@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessBoard;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.AuthData;
@@ -123,6 +124,8 @@ public class ChessClient {
             }
             int gameId = games.get(gameNumber - 1).gameID();
             server.joinGame(null, gameId, authData.authToken());
+            System.out.println(new ChessBoardUI(new ChessBoard()).printBoard());
+            System.out.println(new ChessBoardUI(new ChessBoard()).printBoard());
             return String.format("You joined game %d.", gameId);
         } else if (params.length == 2) {
             int gameNumber = Integer.parseInt(params[0]);
@@ -130,10 +133,15 @@ public class ChessClient {
                 throw new ArgumentException("Invalid game number");
             }
             int gameId = games.get(gameNumber - 1).gameID();
-            if (params[1].equals("white"))
+            if (params[1].equals("white")) {
                 server.joinGame("WHITE", gameId, authData.authToken());
-            else if (params[1].equals("black"))
+                System.out.println(new ChessBoardUI(new ChessBoard()).printBoard());
+            }
+            else if (params[1].equals("black")) {
                 server.joinGame("BLACK", gameId, authData.authToken());
+                System.out.println(new ChessBoardUI(new ChessBoard()).printBoard());
+            }
+
             else throw new ArgumentException("Please enter WHITE or BLACK");
             return String.format("You joined game %d", gameId);
         }

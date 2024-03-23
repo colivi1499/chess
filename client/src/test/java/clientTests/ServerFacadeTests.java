@@ -1,7 +1,6 @@
 package clientTests;
 
 import dataAccess.DataAccessException;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import org.junit.jupiter.api.*;
 import result.CreateGameResult;
 import result.ListGamesResult;
