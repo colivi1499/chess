@@ -7,6 +7,8 @@ import model.GameData;
 import model.UserData;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.Objects;
+
 public class UserService {
     UserDAO userDAO;
     AuthService authService;
@@ -47,12 +49,12 @@ public class UserService {
     public void joinGame(ChessGame.TeamColor clientColor, int gameID, String authToken, String username) throws DataAccessException {
         if (authService.authDAO.getAuth(authToken) != null && gameService.getGame(gameID) != null) {
             if (clientColor == ChessGame.TeamColor.WHITE) {
-                if (gameService.getGame(gameID).whiteUsername() == null)
+                if (gameService.getGame(gameID).whiteUsername() == null || Objects.equals(gameService.getGame(gameID).whiteUsername(), username))
                     gameService.updateGame(gameID,new GameData(gameID, username,gameService.getGame(gameID).blackUsername(),gameService.getGame(gameID).gameName(),gameService.getGame(gameID).game()));
                 else throw new DataAccessException("Bad color");
             }
             if (clientColor == ChessGame.TeamColor.BLACK) {
-                if (gameService.getGame(gameID).blackUsername() == null)
+                if (gameService.getGame(gameID).blackUsername() == null || Objects.equals(gameService.getGame(gameID).blackUsername(), username))
                     gameService.updateGame(gameID,new GameData(gameID, gameService.getGame(gameID).whiteUsername(),username,gameService.getGame(gameID).gameName(),gameService.getGame(gameID).game()));
                 else throw new DataAccessException("Bad color");
             }

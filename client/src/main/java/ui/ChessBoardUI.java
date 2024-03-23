@@ -53,18 +53,22 @@ public class ChessBoardUI {
         String result = "";
         if (blackView) {
             for (int i = 0; i < 8; i++) {
+                result += String.format("%s%s%d ", SET_BG_COLOR_BLACK, SET_TEXT_COLOR_WHITE, i + 1);
                 for (int j = 0; j < 8; j++) {
                     result += board[i][j];
                 }
                 result += SET_BG_COLOR_BLACK + "\n";
             }
+            result += String.format("%s   h  g  f  e  d  c  b  a\n", SET_TEXT_COLOR_WHITE);
         } else {
             for (int i = 7; i >= 0; i--) {
+                result += String.format("%s%s%d ", SET_BG_COLOR_BLACK, SET_TEXT_COLOR_WHITE, i + 1);
                 for (int j = 7; j >= 0; j--) {
                     result += board[i][j];
                 }
                 result += SET_BG_COLOR_BLACK + "\n";
             }
+            result += String.format("%s   a  b  c  d  e  f  g  h\n", SET_TEXT_COLOR_WHITE);
         }
         return result;
     }

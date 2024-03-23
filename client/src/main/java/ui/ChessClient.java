@@ -122,7 +122,12 @@ public class ChessClient {
 
     public String joinGame(String... params) throws ArgumentException, DataAccessException {
         if (params.length == 1) {
-            int gameNumber = Integer.parseInt(params[0]);
+            int gameNumber;
+            try {
+                gameNumber = Integer.parseInt(params[0]);
+            } catch (Exception e) {
+                throw new ArgumentException("Join game with: 5 <game ID> <WHITE|BLACK|<empty>>");
+            }
             if (gameNumber < 1 || gameNumber > games.size()) {
                 throw new ArgumentException("Invalid game number");
             }
