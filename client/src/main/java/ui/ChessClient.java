@@ -36,10 +36,14 @@ public class ChessClient {
     }
     public String help() {
         if (state == State.SIGNEDOUT)
-            return String.format("1. Help %s- with possible commands%s\n2. Quit %s- playing chess%s\n3. Login <username> <password> %s- to play chess%s\n4. Register <username> <password> <email> %s- to create an account%s\n",
-                    SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE);
+            return String.format("1. Help %s- with possible commands%s\n2. Quit %s- playing chess%s\n3. Login <username> <password> %s- to play chess%s\n" +
+                            "4. Register <username> <password> <email> %s- to create an account%s\n",
+                    SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY,
+                    SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE);
         else
-            return "1. Help\n2. Logout\n3. Create Game\n4. List Games\n5. Join Game\n6. Join Observer";
+            return String.format("1. Help %s- with possible commands%s\n2. Logout user\n3. Create Game <index>\n" +
+                            "4. List Games %s- in the database%s\n5. Join Game <index> <WHITE|BLACK>\n6. Join Observer",
+                    SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE);
     }
 
     public String eval(String input) throws ArgumentException, DataAccessException {

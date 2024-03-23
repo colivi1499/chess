@@ -80,10 +80,24 @@ public class ServerFacadeTests {
     }
 
     @Test
+    public void createGameBad() throws DataAccessException {
+        Assertions.assertThrows(DataAccessException.class, () -> facade.createGame("game1", "1234"));
+    }
+
+
+    @Test
     public void joinGame() throws DataAccessException {
         var authData = facade.register("SomeoneElse2","Password123", "johndoe@gmail.com");
         CreateGameResult game = facade.createGame("game1",authData.authToken());
         Assertions.assertDoesNotThrow(() -> facade.joinGame("BLACK", game.gameID(), authData.authToken()));
+    }
+
+    @Test
+    public void joinGameBad() throws DataAccessException {
+        var authData = facade.register("SomeoneElse2","Password123", "johndoe@gmail.com");
+        CreateGameResult game = facade.createGame("game1",authData.authToken());
+        facade.joinGame("BLACK", game.gameID(), authData.authToken());
+        Assertions.assertThrows(DataAccessException.class, () -> facade.joinGame("BLACK", game.gameID(), authData.authToken()));
     }
     @Test
     public void listGames() throws DataAccessException {
@@ -92,8 +106,12 @@ public class ServerFacadeTests {
         CreateGameResult game2 = facade.createGame("game2", authData.authToken());
         facade.joinGame("BLACK", game.gameID(), authData.authToken());
         ListGamesResult result = facade.listGames(authData.authToken());
-        System.out.println(result);
         Assertions.assertEquals(result.games().size(), 2);
+    }
+
+    @Test
+    public void listGamesBad() throws DataAccessException {
+        Assertions.assertThrows(DataAccessException.class, () -> facade.listGames( "1234"));
     }
 
 
