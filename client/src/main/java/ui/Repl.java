@@ -3,12 +3,15 @@ package ui;
 
 import dataAccess.DataAccessException;
 import spark.Spark;
+import webSocketFacade.NotificationHandler;
+import webSocketMessages.serverMessages.Notification;
+import webSocketMessages.serverMessages.ServerMessage;
 
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
 
-public class Repl {
+public class Repl implements NotificationHandler {
     private final ChessClient client;
 
     public Repl(int port) {
@@ -42,4 +45,9 @@ public class Repl {
         System.out.print("\n" + RESET_TEXT_COLOR + ">>> " + SET_TEXT_COLOR_GREEN);
     }
 
+    @Override
+    public void notify(ServerMessage serverMessage) {
+        System.out.println(SET_TEXT_COLOR_RED + serverMessage);
+        printPrompt();
+    }
 }
