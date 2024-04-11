@@ -30,7 +30,7 @@ public class Repl implements NotificationHandler {
             try {
                 result = client.eval(line);
                 System.out.print(SET_TEXT_COLOR_BLUE + result);
-            } catch (DataAccessException | ArgumentException e) {
+            } catch (Exception e) {
                 var msg = e.getMessage();
                 System.out.print(msg);
             }

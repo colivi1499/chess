@@ -8,6 +8,7 @@ import result.CreateGameResult;
 import result.GameResult;
 import result.ListGamesResult;
 import serverFacade.ServerFacade;
+import webSocketFacade.WebSocketFacade;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,14 +26,17 @@ public class ChessClient {
 
 
     private final int port;
+    private final String url;
     private final ServerFacade server;
     private final Repl repl;
+    private WebSocketFacade ws;
     private State state = State.SIGNEDOUT;
 
     public ChessClient(int port, Repl repl) {
         this.port = port;
         this.repl = repl;
         this.server = new ServerFacade(port);
+        url = "http://localhost:" + port;
     }
     public String help() {
         if (state == State.SIGNEDOUT)
@@ -46,7 +50,7 @@ public class ChessClient {
                     SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE);
     }
 
-    public String eval(String input) throws ArgumentException, DataAccessException {
+    public String eval(String input) throws Exception {
         var tokens = input.toLowerCase().split(" ");
         var cmd = (tokens.length > 0) ? tokens[0] : "help";
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
@@ -81,7 +85,7 @@ public class ChessClient {
         throw new ArgumentException("Sign in with: 3 <username> <password>");
     }
 
-    public String register(String... params) throws DataAccessException, ArgumentException {
+    public String register(String... params) throws Exception {
         if (params.length == 3) {
             visitorName = params[0];
             authData = server.register(visitorName, params[1], params[2]);
@@ -120,7 +124,7 @@ public class ChessClient {
         return list;
     }
 
-    public String joinGame(String... params) throws ArgumentException, DataAccessException {
+    public String joinGame(String... params) throws Exception {
         if (params.length == 1) {
             int gameNumber;
             try {
@@ -144,10 +148,14 @@ public class ChessClient {
             int gameId = games.get(gameNumber - 1).gameID();
             if (params[1].equals("white")) {
                 server.joinGame("WHITE", gameId, authData.authToken());
+                ws = new WebSocketFacade(url,repl);
+                ws.joinPlayer(authData.authToken());
                 System.out.println(new ChessBoardUI(new ChessBoard()).printBoard(false));
             }
             else if (params[1].equals("black")) {
                 server.joinGame("BLACK", gameId, authData.authToken());
+                ws = new WebSocketFacade(url,repl);
+                ws.joinPlayer(authData.authToken());
                 System.out.println(new ChessBoardUI(new ChessBoard()).printBoard(true));
             }
 
