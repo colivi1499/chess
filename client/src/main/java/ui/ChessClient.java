@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessBoard;
+import chess.ChessGame;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.AuthData;
@@ -9,6 +10,7 @@ import result.GameResult;
 import result.ListGamesResult;
 import serverFacade.ServerFacade;
 import webSocketFacade.WebSocketFacade;
+import webSocketMessages.userCommands.JoinPlayer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,7 +47,7 @@ public class ChessClient {
                     SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY,
                     SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE);
         else
-            return String.format("1. Help %s- with possible commands%s\n2. Logout user\n3. Create Game <index>\n" +
+            return String.format("1. Help %s- with possible commands%s\n2. Logout user\n3. Create Game <name>\n" +
                             "4. List Games %s- in the database%s\n5. Join Game <index> <WHITE|BLACK>\n6. Join Observer",
                     SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE);
     }
@@ -149,13 +151,13 @@ public class ChessClient {
             if (params[1].equals("white")) {
                 server.joinGame("WHITE", gameId, authData.authToken());
                 ws = new WebSocketFacade(url,repl);
-                ws.joinPlayer(authData.authToken());
+                ws.joinPlayer(new JoinPlayer(authData.authToken(),gameId, ChessGame.TeamColor.WHITE));
                 System.out.println(new ChessBoardUI(new ChessBoard()).printBoard(false));
             }
             else if (params[1].equals("black")) {
                 server.joinGame("BLACK", gameId, authData.authToken());
                 ws = new WebSocketFacade(url,repl);
-                ws.joinPlayer(authData.authToken());
+                ws.joinPlayer(new JoinPlayer(authData.authToken(),gameId, ChessGame.TeamColor.BLACK));
                 System.out.println(new ChessBoardUI(new ChessBoard()).printBoard(true));
             }
 

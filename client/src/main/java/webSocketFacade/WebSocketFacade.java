@@ -2,6 +2,7 @@ package webSocketFacade;
 
 import com.google.gson.Gson;
 import webSocketMessages.serverMessages.ServerMessage;
+import webSocketMessages.userCommands.JoinPlayer;
 import webSocketMessages.userCommands.UserGameCommand;
 import javax.websocket.*;
 import java.io.IOException;
@@ -41,10 +42,9 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(javax.websocket.Session session, EndpointConfig endpointConfig) {
     }
 
-    public void joinPlayer(String visitorName) throws Exception {
+    public void joinPlayer(JoinPlayer joinPlayer) throws Exception {
         try {
-            var userGameCommand = new UserGameCommand(visitorName);
-            this.session.getBasicRemote().sendText(new Gson().toJson(userGameCommand));
+            this.session.getBasicRemote().sendText(new Gson().toJson(joinPlayer));
         } catch (IOException ex) {
             throw new Exception(ex.getMessage());
         }

@@ -5,4 +5,11 @@ public class Notification extends ServerMessage {
         super(ServerMessageType.NOTIFICATION);
         this.notification = notification;
     }
+
+    @Override
+    public String toString() {
+        return "Notification{" +
+                "notification='" + notification + '\'' +
+                '}';
+    }
 }
