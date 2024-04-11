@@ -10,6 +10,7 @@ import result.GameResult;
 import result.ListGamesResult;
 import serverFacade.ServerFacade;
 import webSocketFacade.WebSocketFacade;
+import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.userCommands.JoinPlayer;
 
 import java.util.ArrayList;

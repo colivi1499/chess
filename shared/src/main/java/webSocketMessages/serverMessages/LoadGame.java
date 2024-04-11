@@ -9,10 +9,4 @@ public class LoadGame extends ServerMessage {
         this.game = game;
     }
 
-    @Override
-    public String toString() {
-        return "LoadGame{" +
-                "game=" + game +
-                '}';
-    }
 }

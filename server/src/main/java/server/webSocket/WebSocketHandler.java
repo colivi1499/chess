@@ -2,6 +2,7 @@ package server.webSocket;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -9,7 +10,7 @@ import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.JoinPlayer;
-import webSocketMessages.userCommands.UserGameCommand;
+import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
 import java.util.Timer;
@@ -22,7 +23,8 @@ public class WebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
-        UserGameCommand userGameCommand = new Gson().fromJson(message, UserGameCommand.class);
+        Gson gson = new GsonBuilder().registerTypeAdapter(UserGameCommand.class, new UserGameCommand.UserGameCommandDeserializer()).create();
+        UserGameCommand userGameCommand = gson.fromJson(message, UserGameCommand.class);
         switch (userGameCommand.getCommandType()) {
             case JOIN_PLAYER -> joinPlayer(userGameCommand, session);
             case JOIN_OBSERVER -> joinObserver(userGameCommand.getAuthString(), session);
@@ -34,7 +36,7 @@ public class WebSocketHandler {
         var message = String.format("%s joined the game", joinPlayer.getAuthString());
         var loadGameMessage = new LoadGame(new ChessGame());
         var notification = new Notification(message);
-        connections.sendMessage(joinPlayer.getAuthString(), loadGameMessage);
+        connections.sendToRootClient(joinPlayer.getAuthString(), loadGameMessage);
         connections.broadcast(joinPlayer.getAuthString(), notification);
     }
 
@@ -46,5 +48,4 @@ public class WebSocketHandler {
         connections.broadcast(authString, loadGameMessage);
         connections.broadcast(authString, notification);
     }
-
 }

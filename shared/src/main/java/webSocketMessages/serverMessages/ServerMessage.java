@@ -1,5 +1,8 @@
 package webSocketMessages.serverMessages;
 
+import com.google.gson.*;
+
+import java.lang.reflect.Type;
 import java.util.Objects;
 
 /**
@@ -10,7 +13,6 @@ import java.util.Objects;
  */
 public class ServerMessage {
     ServerMessageType serverMessageType;
-    String notification = "";
     public enum ServerMessageType {
         LOAD_GAME,
         ERROR,
@@ -38,5 +40,25 @@ public class ServerMessage {
     @Override
     public int hashCode() {
         return Objects.hash(getServerMessageType());
+    }
+
+    public String toString() {
+        return new Gson().toJson(this);
+    }
+
+    public static class ServerMessageDeserializer implements JsonDeserializer<ServerMessage> {
+        @Override
+        public ServerMessage deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+
+            String typeString = jsonObject.get("serverMessageType").getAsString();
+            ServerMessage.ServerMessageType serverMessageType = ServerMessage.ServerMessageType.valueOf(typeString);
+
+            return switch(serverMessageType) {
+                case ERROR -> context.deserialize(jsonElement, Error.class);
+                case LOAD_GAME -> context.deserialize(jsonElement, LoadGame.class);
+                case NOTIFICATION -> context.deserialize(jsonElement, Notification.class);
+            };
+        }
     }
 }

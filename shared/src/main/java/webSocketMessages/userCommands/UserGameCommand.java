@@ -1,5 +1,12 @@
 package webSocketMessages.userCommands;
 
+import com.google.gson.*;
+import webSocketMessages.serverMessages.Error;
+import webSocketMessages.serverMessages.LoadGame;
+import webSocketMessages.serverMessages.Notification;
+import webSocketMessages.serverMessages.ServerMessage;
+
+import java.lang.reflect.Type;
 import java.util.Objects;
 
 /**
@@ -47,5 +54,23 @@ public class UserGameCommand {
     @Override
     public int hashCode() {
         return Objects.hash(getCommandType(), getAuthString());
+    }
+
+    public static class UserGameCommandDeserializer implements JsonDeserializer<UserGameCommand> {
+        @Override
+        public UserGameCommand deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+
+            String typeString = jsonObject.get("commandType").getAsString();
+            CommandType commandType = CommandType.valueOf(typeString);
+
+            return switch(commandType) {
+                case JOIN_OBSERVER -> context.deserialize(jsonElement, JoinObserver.class);
+                case JOIN_PLAYER -> context.deserialize(jsonElement, JoinPlayer.class);
+                case MAKE_MOVE -> context.deserialize(jsonElement, MakeMove.class);
+                case LEAVE -> context.deserialize(jsonElement, Leave.class);
+                case RESIGN -> context.deserialize(jsonElement, Resign.class);
+            };
+        }
     }
 }
