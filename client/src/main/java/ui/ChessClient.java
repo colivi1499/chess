@@ -150,14 +150,12 @@ public class ChessClient {
             }
             int gameId = games.get(gameNumber - 1).gameID();
             if (params[1].equals("white")) {
-                server.joinGame("WHITE", gameId, authData.authToken());
-                ws = new WebSocketFacade(url,repl);
+                ws = new WebSocketFacade(url,repl,server);
                 ws.joinPlayer(new JoinPlayer(authData.authToken(),gameId, ChessGame.TeamColor.WHITE));
                 System.out.println(new ChessBoardUI(new ChessBoard()).printBoard(false));
             }
             else if (params[1].equals("black")) {
-                server.joinGame("BLACK", gameId, authData.authToken());
-                ws = new WebSocketFacade(url,repl);
+                ws = new WebSocketFacade(url,repl,server);
                 ws.joinPlayer(new JoinPlayer(authData.authToken(),gameId, ChessGame.TeamColor.BLACK));
                 System.out.println(new ChessBoardUI(new ChessBoard()).printBoard(true));
             }

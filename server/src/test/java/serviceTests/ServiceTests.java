@@ -87,9 +87,9 @@ class ServiceTests {
     void joinGame() throws DataAccessException {
         userService.register(new UserData("Name","something","cameron@schoeny.com"));
         userService.gameService.createGame("Game1",authService.authDAO.getAuthFromUsername("Name").authToken());
-        userService.joinGame(ChessGame.TeamColor.WHITE,gameDAO.getID("Game1"),authService.authDAO.getAuthFromUsername("Name").authToken(),"Name");
+        userService.joinGame(ChessGame.TeamColor.WHITE,gameDAO.getID("Game1"),authService.authDAO.getAuthFromUsername("Name").authToken());
         userService.register(new UserData("Name2","something","cameron@schoeny.com"));
-        userService.joinGame(ChessGame.TeamColor.BLACK,gameDAO.getID("Game1"),authService.authDAO.getAuthFromUsername("Name2").authToken(),"Name2");
+        userService.joinGame(ChessGame.TeamColor.BLACK,gameDAO.getID("Game1"),authService.authDAO.getAuthFromUsername("Name2").authToken());
         System.out.println(userService.gameService.getGame(gameDAO.getID("Game1")));
     }
 }

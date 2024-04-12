@@ -1,6 +1,8 @@
 package webSocketFacade;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import serverFacade.ServerFacade;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.JoinPlayer;
 import webSocketMessages.userCommands.UserGameCommand;
@@ -15,7 +17,7 @@ public class WebSocketFacade extends Endpoint {
     javax.websocket.Session session;
     NotificationHandler notificationHandler;
 
-    public WebSocketFacade(String url, NotificationHandler notificationHandler) throws Exception {
+    public WebSocketFacade(String url, NotificationHandler notificationHandler, ServerFacade serverFacade) throws Exception {
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/connect");
@@ -28,7 +30,8 @@ public class WebSocketFacade extends Endpoint {
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-                    ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+                    Gson gson = new GsonBuilder().registerTypeAdapter(ServerMessage.class, new ServerMessage.ServerMessageDeserializer()).create();
+                    ServerMessage serverMessage = gson.fromJson(message, ServerMessage.class);
                     notificationHandler.notify(serverMessage);
                 }
             });
@@ -43,9 +46,10 @@ public class WebSocketFacade extends Endpoint {
     }
 
     public void joinPlayer(JoinPlayer joinPlayer) throws Exception {
+        Gson gson = new GsonBuilder().registerTypeAdapter(UserGameCommand.class, new UserGameCommand.UserGameCommandDeserializer()).create();
         try {
-            this.session.getBasicRemote().sendText(new Gson().toJson(joinPlayer));
-        } catch (IOException ex) {
+            this.session.getBasicRemote().sendText(gson.toJson(joinPlayer));
+        } catch (Exception ex) {
             throw new Exception(ex.getMessage());
         }
     }

@@ -1,5 +1,6 @@
 package server;
 
+import dataAccess.DataAccessException;
 import handlers.*;
 import server.webSocket.WebSocketHandler;
 import spark.*;
@@ -13,7 +14,11 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-        Spark.webSocket("/connect", new WebSocketHandler());
+        try {
+            Spark.webSocket("/connect", new WebSocketHandler());
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
 
         Spark.delete("/db", new ClearHandler());
         Spark.post("/user", new RegisterHandler());

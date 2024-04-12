@@ -46,7 +46,8 @@ public class UserService {
         authService.deleteAuth(authToken);
     }
 
-    public void joinGame(ChessGame.TeamColor clientColor, int gameID, String authToken, String username) throws DataAccessException {
+    public void joinGame(ChessGame.TeamColor clientColor, int gameID, String authToken) throws DataAccessException {
+        String username = authService.authDAO.getUsername(authToken);
         if (authService.authDAO.getAuth(authToken) != null && gameService.getGame(gameID) != null) {
             if (clientColor == ChessGame.TeamColor.WHITE) {
                 if (gameService.getGame(gameID).whiteUsername() == null || Objects.equals(gameService.getGame(gameID).whiteUsername(), username))

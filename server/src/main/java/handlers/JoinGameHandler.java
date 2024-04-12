@@ -34,7 +34,7 @@ public class JoinGameHandler implements Route {
         }
         //Analyze the result from the service and set the correct status code
         try {
-            userService.joinGame(color,req.gameID(),authToken, userService.getUsername(authToken));
+            userService.joinGame(color,req.gameID(),authToken);
         } catch (Exception e) {
             if (e.getMessage().endsWith("gameID")) {
                 response.status(400);
