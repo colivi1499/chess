@@ -44,6 +44,7 @@ public class WebSocketHandler {
             case JOIN_PLAYER -> joinPlayer((JoinPlayer) userGameCommand, session);
             case JOIN_OBSERVER -> joinObserver((JoinObserver) userGameCommand, session);
             case MAKE_MOVE -> makeMove((MakeMove) userGameCommand, session);
+            case RESIGN -> resign((Resign) userGameCommand, session);
         }
     }
 
@@ -94,8 +95,11 @@ public class WebSocketHandler {
             ChessPosition start = makeMove.getMove().getStartPosition();
             ChessPosition end = makeMove.getMove().getEndPosition();
             ChessGame.TeamColor color = game.game().getBoard().getPiece(start).getTeamColor();
+            if (game.isOver())
+                throw new InvalidMoveException("Game is over");
             if ((white && color == ChessGame.TeamColor.WHITE) || (black && color == ChessGame.TeamColor.BLACK)) {
                 game.game().makeMove(makeMove.getMove());
+                userService.gameService.updateGame(makeMove.getGameID(), game);
             } else {
                 throw new InvalidMoveException("Wrong team");
             }
@@ -107,6 +111,28 @@ public class WebSocketHandler {
         } catch (InvalidMoveException | DataAccessException e) {
             var errorMessage = new Error("Error: " + e.getMessage());
             connections.sendToRootClient(makeMove.getAuthString(), errorMessage);
+        }
+    }
+
+    private void resign(Resign resign, Session session) throws IOException {
+        connections.add(resign.getAuthString(), session);
+        var message = String.format("%s resigned", resign.getAuthString());
+        var notification = new Notification(message);
+        try {
+            GameData game = userService.gameService.getGame(resign.getGameID());
+            String username = userService.getUsername(resign.getAuthString());
+            if (!(username.equals(game.whiteUsername()) || username.equals(game.blackUsername()))) {
+                throw new InvalidMoveException("You are an observer");
+            }
+            if (game.isOver())
+                throw new InvalidMoveException("The game is already over");
+
+            game.setGameEnded(true);
+            userService.gameService.updateGame(resign.getGameID(),game);
+            connections.broadcast("", notification);
+        } catch (DataAccessException | InvalidMoveException e) {
+            var errorMessage = new Error("Error: " + e.getMessage());
+            connections.sendToRootClient(resign.getAuthString(), errorMessage);
         }
     }
 }
