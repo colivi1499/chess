@@ -1,6 +1,7 @@
 package server.webSocket;
 
 import chess.ChessGame;
+import chess.ChessPosition;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -85,13 +86,20 @@ public class WebSocketHandler {
     }
 
     private void makeMove(MakeMove makeMove, Session session) throws IOException {
-        connections.add(makeMove.getAuthString(), session);
         try {
             GameData game = userService.gameService.getGame(makeMove.getGameID());
-            game.game().makeMove(makeMove.getMove());
-            String start = makeMove.getMove().getStartPosition().toString();
-            String end = makeMove.getMove().getEndPosition().toString();
-            var message = String.format("%s moved %s to %s", makeMove.getAuthString(), start, end );
+            String username = userService.getUsername(makeMove.getAuthString());
+            boolean white = username.equals(game.whiteUsername());
+            boolean black = username.equals(game.blackUsername());
+            ChessPosition start = makeMove.getMove().getStartPosition();
+            ChessPosition end = makeMove.getMove().getEndPosition();
+            ChessGame.TeamColor color = game.game().getBoard().getPiece(start).getTeamColor();
+            if ((white && color == ChessGame.TeamColor.WHITE) || (black && color == ChessGame.TeamColor.BLACK)) {
+                game.game().makeMove(makeMove.getMove());
+            } else {
+                throw new InvalidMoveException("Wrong team");
+            }
+            var message = String.format("%s moved %s to %s", makeMove.getAuthString(), start.toString(), end.toString() );
             var loadGameMessage = new LoadGame(game.game());
             var notification = new Notification(message);
             connections.broadcast("", loadGameMessage);
