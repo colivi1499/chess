@@ -1,6 +1,7 @@
 package server.webSocket;
 
 import chess.ChessGame;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dataAccess.DataAccessException;
@@ -41,13 +42,13 @@ public class WebSocketHandler {
         switch (userGameCommand.getCommandType()) {
             case JOIN_PLAYER -> joinPlayer((JoinPlayer) userGameCommand, session);
             case JOIN_OBSERVER -> joinObserver((JoinObserver) userGameCommand, session);
+            case MAKE_MOVE -> makeMove((MakeMove) userGameCommand, session);
         }
     }
 
     private void joinPlayer(JoinPlayer joinPlayer, Session session) throws IOException {
         connections.add(joinPlayer.getAuthString(), session);
         var message = String.format("%s joined the game as %s.", joinPlayer.getAuthString(), joinPlayer.getTeamColorString());
-        var loadGameMessage = new LoadGame(new ChessGame());
         var notification = new Notification(message);
         try {
             GameData game = userService.gameService.getGame(joinPlayer.getGameID());
@@ -56,6 +57,7 @@ public class WebSocketHandler {
                 throw new DataAccessException("bad join");
             if (color.equals(ChessGame.TeamColor.BLACK) && game.blackUsername() == null)
                 throw new DataAccessException("bad join");
+            var loadGameMessage = new LoadGame(game.game());
             userService.joinGame(joinPlayer.getTeamColor(),joinPlayer.getGameID(),joinPlayer.getAuthString());
             connections.sendToRootClient(joinPlayer.getAuthString(), loadGameMessage);
             connections.broadcast(joinPlayer.getAuthString(), notification);
@@ -79,6 +81,24 @@ public class WebSocketHandler {
         } catch (DataAccessException e) {
             var errorMessage = new Error("Error: spot already taken");
             connections.sendToRootClient(joinObserver.getAuthString(), errorMessage);
+        }
+    }
+
+    private void makeMove(MakeMove makeMove, Session session) throws IOException {
+        connections.add(makeMove.getAuthString(), session);
+        try {
+            GameData game = userService.gameService.getGame(makeMove.getGameID());
+            game.game().makeMove(makeMove.getMove());
+            String start = makeMove.getMove().getStartPosition().toString();
+            String end = makeMove.getMove().getEndPosition().toString();
+            var message = String.format("%s moved %s to %s", makeMove.getAuthString(), start, end );
+            var loadGameMessage = new LoadGame(game.game());
+            var notification = new Notification(message);
+            connections.broadcast("", loadGameMessage);
+            connections.broadcast(makeMove.getAuthString(), notification);
+        } catch (InvalidMoveException | DataAccessException e) {
+            var errorMessage = new Error("Error: " + e.getMessage());
+            connections.sendToRootClient(makeMove.getAuthString(), errorMessage);
         }
     }
 }
