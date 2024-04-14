@@ -45,11 +45,13 @@ public class WebSocketHandler {
             case JOIN_OBSERVER -> joinObserver((JoinObserver) userGameCommand, session);
             case MAKE_MOVE -> makeMove((MakeMove) userGameCommand, session);
             case RESIGN -> resign((Resign) userGameCommand, session);
+            case LEAVE -> leave((Leave) userGameCommand);
         }
     }
 
     private void joinPlayer(JoinPlayer joinPlayer, Session session) throws IOException {
         connections.add(joinPlayer.getAuthString(), session);
+        connections.addLobby(joinPlayer.getGameID(), joinPlayer.getAuthString());
         var message = String.format("%s joined the game as %s.", joinPlayer.getAuthString(), joinPlayer.getTeamColorString());
         var notification = new Notification(message);
         try {
@@ -62,10 +64,10 @@ public class WebSocketHandler {
             var loadGameMessage = new LoadGame(game.game());
             userService.joinGame(joinPlayer.getTeamColor(),joinPlayer.getGameID(),joinPlayer.getAuthString());
             connections.sendToRootClient(joinPlayer.getAuthString(), loadGameMessage);
-            connections.broadcast(joinPlayer.getAuthString(), notification);
+            connections.broadcast(joinPlayer.getAuthString(), notification, joinPlayer.getGameID());
         } catch (DataAccessException e) {
             var errorMessage = new Error("Error: spot already taken");
-            if (e.getMessage() == "bad join")
+            if (e.getMessage().equals("bad join"))
                 errorMessage = new Error("Error: bad join");
             connections.sendToRootClient(joinPlayer.getAuthString(), errorMessage);
         }
@@ -73,13 +75,14 @@ public class WebSocketHandler {
 
     private void joinObserver(JoinObserver joinObserver, Session session) throws IOException {
         connections.add(joinObserver.getAuthString(), session);
+        connections.addLobby(joinObserver.getGameID(), joinObserver.getAuthString());
         var message = String.format("%s joined the game as an observer", joinObserver.getAuthString());
         var loadGameMessage = new LoadGame(new ChessGame());
         var notification = new Notification(message);
         try {
             userService.joinGame(null,joinObserver.getGameID(),joinObserver.getAuthString());
             connections.sendToRootClient(joinObserver.getAuthString(), loadGameMessage);
-            connections.broadcast(joinObserver.getAuthString(), notification);
+            connections.broadcast(joinObserver.getAuthString(), notification, joinObserver.getGameID());
         } catch (DataAccessException e) {
             var errorMessage = new Error("Error: spot already taken");
             connections.sendToRootClient(joinObserver.getAuthString(), errorMessage);
@@ -106,8 +109,8 @@ public class WebSocketHandler {
             var message = String.format("%s moved %s to %s", makeMove.getAuthString(), start.toString(), end.toString() );
             var loadGameMessage = new LoadGame(game.game());
             var notification = new Notification(message);
-            connections.broadcast("", loadGameMessage);
-            connections.broadcast(makeMove.getAuthString(), notification);
+            connections.broadcast("", loadGameMessage, makeMove.getGameID());
+            connections.broadcast(makeMove.getAuthString(), notification, makeMove.getGameID());
         } catch (InvalidMoveException | DataAccessException e) {
             var errorMessage = new Error("Error: " + e.getMessage());
             connections.sendToRootClient(makeMove.getAuthString(), errorMessage);
@@ -115,7 +118,6 @@ public class WebSocketHandler {
     }
 
     private void resign(Resign resign, Session session) throws IOException {
-        connections.add(resign.getAuthString(), session);
         var message = String.format("%s resigned", resign.getAuthString());
         var notification = new Notification(message);
         try {
@@ -129,10 +131,32 @@ public class WebSocketHandler {
 
             game.setGameEnded(true);
             userService.gameService.updateGame(resign.getGameID(),game);
-            connections.broadcast("", notification);
+            connections.broadcast("", notification, resign.getGameID());
         } catch (DataAccessException | InvalidMoveException e) {
             var errorMessage = new Error("Error: " + e.getMessage());
             connections.sendToRootClient(resign.getAuthString(), errorMessage);
+        }
+    }
+
+    private void leave(Leave leave) throws IOException {
+        try {
+            String username = userService.getUsername(leave.getAuthString());
+            var message = String.format("%s left the game", username);
+            GameData game = userService.gameService.getGame(leave.getGameID());
+            var notification = new Notification(message);
+            boolean white = username.equals(game.whiteUsername());
+            boolean black = username.equals(game.blackUsername());
+            if (white)
+                game.setWhiteUsername(null);
+            if (black)
+                game.setBlackUsername(null);
+            userService.gameService.updateGame(leave.getGameID(), game);
+            connections.broadcast("", notification, leave.getGameID());
+            connections.remove(leave.getAuthString());
+            connections.removeUserFromLobby(leave.getAuthString(),leave.getGameID());
+        } catch (Exception e) {
+            var errorMessage = new Error("Error: " + e.getMessage());
+            connections.sendToRootClient(leave.getAuthString(), errorMessage);
         }
     }
 }
