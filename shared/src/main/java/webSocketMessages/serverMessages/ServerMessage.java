@@ -16,7 +16,8 @@ public class ServerMessage {
     public enum ServerMessageType {
         LOAD_GAME,
         ERROR,
-        NOTIFICATION
+        NOTIFICATION,
+        LOAD_GAME_HIGHLIGHT;
     }
 
     public ServerMessage(ServerMessageType type) {
@@ -58,6 +59,7 @@ public class ServerMessage {
                 case ERROR -> context.deserialize(jsonElement, Error.class);
                 case LOAD_GAME -> context.deserialize(jsonElement, LoadGame.class);
                 case NOTIFICATION -> context.deserialize(jsonElement, Notification.class);
+                case LOAD_GAME_HIGHLIGHT -> context.deserialize(jsonElement, LoadGameHighlight.class);
             };
         }
     }

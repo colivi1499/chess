@@ -75,6 +75,7 @@ public class ConnectionManager {
         }
     }
     public void sendToRootClient(String visitorName, ServerMessage serverMessage) throws IOException {
-        connections.get(visitorName).send(serverMessage.toString());
+        if (connections.get(visitorName) != null)
+            connections.get(visitorName).send(serverMessage.toString());
     }
 }

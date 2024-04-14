@@ -26,7 +26,9 @@ public class UserGameCommand {
         JOIN_OBSERVER,
         MAKE_MOVE,
         LEAVE,
-        RESIGN
+        RESIGN,
+        REDRAW_BOARD,
+        HIGHLIGHT;
     }
 
     protected CommandType commandType;
@@ -70,6 +72,8 @@ public class UserGameCommand {
                 case MAKE_MOVE -> context.deserialize(jsonElement, MakeMove.class);
                 case LEAVE -> context.deserialize(jsonElement, Leave.class);
                 case RESIGN -> context.deserialize(jsonElement, Resign.class);
+                case REDRAW_BOARD -> context.deserialize(jsonElement, RedrawBoard.class);
+                case HIGHLIGHT -> context.deserialize(jsonElement, Highlight.class);
             };
         }
     }

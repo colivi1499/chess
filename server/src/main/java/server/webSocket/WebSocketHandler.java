@@ -14,9 +14,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import service.GameService;
 import service.UserService;
-import webSocketMessages.serverMessages.LoadGame;
-import webSocketMessages.serverMessages.Notification;
-import webSocketMessages.serverMessages.ServerMessage;
+import webSocketMessages.serverMessages.*;
 import webSocketMessages.serverMessages.Error;
 import webSocketMessages.userCommands.JoinPlayer;
 import webSocketMessages.userCommands.*;
@@ -43,26 +41,49 @@ public class WebSocketHandler {
         switch (userGameCommand.getCommandType()) {
             case JOIN_PLAYER -> joinPlayer((JoinPlayer) userGameCommand, session);
             case JOIN_OBSERVER -> joinObserver((JoinObserver) userGameCommand, session);
-            case MAKE_MOVE -> makeMove((MakeMove) userGameCommand, session);
-            case RESIGN -> resign((Resign) userGameCommand, session);
+            case MAKE_MOVE -> makeMove((MakeMove) userGameCommand);
+            case RESIGN -> resign((Resign) userGameCommand);
             case LEAVE -> leave((Leave) userGameCommand);
+            case REDRAW_BOARD -> redrawBoard((RedrawBoard) userGameCommand);
+            case HIGHLIGHT -> highlight((Highlight) userGameCommand);
+        }
+    }
+
+    private void redrawBoard(RedrawBoard redrawBoard) throws IOException {
+        try {
+            GameData game = userService.gameService.getGame(redrawBoard.getGameId());
+            ChessGame.TeamColor color = redrawBoard.getTeamColor();
+            var loadGameMessage = new LoadGame(game.game(), color);
+            connections.sendToRootClient(redrawBoard.getAuthString(), loadGameMessage);
+        } catch (DataAccessException e) {
+            var errorMessage = new Error("Error: failed to load game");
+            connections.sendToRootClient(redrawBoard.getAuthString(), errorMessage);
+        }
+    }
+
+    private void highlight(Highlight highlight) throws IOException {
+        try {
+            GameData game = userService.gameService.getGame(highlight.getGameId());
+            ChessGame.TeamColor color = highlight.getTeamColor();
+            var loadGameHighlight = new LoadGameHighlight(game.game(), color, highlight.getPosition());
+            connections.sendToRootClient(highlight.getAuthString(), loadGameHighlight);
+        } catch (DataAccessException e) {
+            var errorMessage = new Error("Error: failed to load game");
+            connections.sendToRootClient(highlight.getAuthString(), errorMessage);
         }
     }
 
     private void joinPlayer(JoinPlayer joinPlayer, Session session) throws IOException {
         connections.add(joinPlayer.getAuthString(), session);
         connections.addLobby(joinPlayer.getGameID(), joinPlayer.getAuthString());
-        var message = String.format("%s joined the game as %s.", joinPlayer.getAuthString(), joinPlayer.getTeamColorString());
-        var notification = new Notification(message);
         try {
+            String username = userService.getUsername(joinPlayer.getAuthString());
+            var message = String.format("%s joined the game as %s.", username, joinPlayer.getTeamColorString());
+            var notification = new Notification(message);
             GameData game = userService.gameService.getGame(joinPlayer.getGameID());
             ChessGame.TeamColor color = joinPlayer.getTeamColor();
-            if (color.equals(ChessGame.TeamColor.WHITE) && game.whiteUsername() == null)
-                throw new DataAccessException("bad join");
-            if (color.equals(ChessGame.TeamColor.BLACK) && game.blackUsername() == null)
-                throw new DataAccessException("bad join");
-            var loadGameMessage = new LoadGame(game.game());
-            userService.joinGame(joinPlayer.getTeamColor(),joinPlayer.getGameID(),joinPlayer.getAuthString());
+            var loadGameMessage = new LoadGame(game.game(), color);
+            userService.joinGame(color,joinPlayer.getGameID(),joinPlayer.getAuthString());
             connections.sendToRootClient(joinPlayer.getAuthString(), loadGameMessage);
             connections.broadcast(joinPlayer.getAuthString(), notification, joinPlayer.getGameID());
         } catch (DataAccessException e) {
@@ -76,10 +97,12 @@ public class WebSocketHandler {
     private void joinObserver(JoinObserver joinObserver, Session session) throws IOException {
         connections.add(joinObserver.getAuthString(), session);
         connections.addLobby(joinObserver.getGameID(), joinObserver.getAuthString());
-        var message = String.format("%s joined the game as an observer", joinObserver.getAuthString());
-        var loadGameMessage = new LoadGame(new ChessGame());
-        var notification = new Notification(message);
         try {
+            String username = userService.getUsername(joinObserver.getAuthString());
+            var message = String.format("%s joined the game as an observer", username);
+            var notification = new Notification(message);
+            GameData game = userService.gameService.getGame(joinObserver.getGameID());
+            var loadGameMessage = new LoadGame(game.game(), ChessGame.TeamColor.WHITE);
             userService.joinGame(null,joinObserver.getGameID(),joinObserver.getAuthString());
             connections.sendToRootClient(joinObserver.getAuthString(), loadGameMessage);
             connections.broadcast(joinObserver.getAuthString(), notification, joinObserver.getGameID());
@@ -89,7 +112,7 @@ public class WebSocketHandler {
         }
     }
 
-    private void makeMove(MakeMove makeMove, Session session) throws IOException {
+    private void makeMove(MakeMove makeMove) throws IOException {
         try {
             GameData game = userService.gameService.getGame(makeMove.getGameID());
             String username = userService.getUsername(makeMove.getAuthString());
@@ -106,8 +129,8 @@ public class WebSocketHandler {
             } else {
                 throw new InvalidMoveException("Wrong team");
             }
-            var message = String.format("%s moved %s to %s", makeMove.getAuthString(), start.toString(), end.toString() );
-            var loadGameMessage = new LoadGame(game.game());
+            var message = String.format("%s moved %s to %s", username, start.toString(), end.toString() );
+            var loadGameMessage = new LoadGame(game.game(), color);
             var notification = new Notification(message);
             connections.broadcast("", loadGameMessage, makeMove.getGameID());
             connections.broadcast(makeMove.getAuthString(), notification, makeMove.getGameID());
@@ -117,7 +140,7 @@ public class WebSocketHandler {
         }
     }
 
-    private void resign(Resign resign, Session session) throws IOException {
+    private void resign(Resign resign) throws IOException {
         var message = String.format("%s resigned", resign.getAuthString());
         var notification = new Notification(message);
         try {

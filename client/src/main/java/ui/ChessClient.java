@@ -2,6 +2,8 @@ package ui;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.AuthData;
@@ -11,7 +13,7 @@ import result.ListGamesResult;
 import serverFacade.ServerFacade;
 import webSocketFacade.WebSocketFacade;
 import webSocketMessages.serverMessages.LoadGame;
-import webSocketMessages.userCommands.JoinPlayer;
+import webSocketMessages.userCommands.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,12 +36,19 @@ public class ChessClient {
     private final Repl repl;
     private WebSocketFacade ws;
     private State state = State.SIGNEDOUT;
+    private int currentGameID = 0;
+    private ChessGame.TeamColor currentColor = null;
 
     public ChessClient(int port, Repl repl) {
         this.port = port;
         this.repl = repl;
         this.server = new ServerFacade(port);
         url = "http://localhost:" + port;
+        try {
+            ws = new WebSocketFacade(url,repl,server);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
     public String help() {
         if (state == State.SIGNEDOUT)
@@ -65,7 +74,7 @@ public class ChessClient {
                 case "4", "register" -> register(params);
                 default -> help();
             };
-        } else {
+        } else if (state == State.SIGNEDIN) {
             return switch (cmd) {
                 case "1", "help" -> help();
                 case "2", "logout" -> logout();
@@ -75,7 +84,17 @@ public class ChessClient {
                 case "6", "joinobserver" -> joinObserver(params);
                 default -> help();
             };
+        } else if (state == State.INGAME) {
+            return switch (cmd) {
+                case "m", "move" -> makeMove(params);
+                case "d", "redraw" -> redraw();
+                case "l", "leave" -> leave();
+                case  "r", "resign" -> resign();
+                case "h", "highlight" -> highlight(params);
+                default -> help();
+            };
         }
+        return "";
     }
 
     public String login(String... params) throws DataAccessException, ArgumentException {
@@ -139,9 +158,10 @@ public class ChessClient {
                 throw new ArgumentException("Invalid game number");
             }
             int gameId = games.get(gameNumber - 1).gameID();
-            server.joinGame(null, gameId, authData.authToken());
-            System.out.println(new ChessBoardUI(new ChessBoard()).printBoard(false));
-            System.out.println(new ChessBoardUI(new ChessBoard()).printBoard(true));
+            ws.joinObserver(new JoinObserver(authData.authToken(), gameId));
+            currentGameID = gameId;
+            currentColor = null;
+            state = State.INGAME;
             return String.format("You joined game %d.", gameId);
         } else if (params.length == 2) {
             int gameNumber = Integer.parseInt(params[0]);
@@ -150,14 +170,16 @@ public class ChessClient {
             }
             int gameId = games.get(gameNumber - 1).gameID();
             if (params[1].equals("white")) {
-                ws = new WebSocketFacade(url,repl,server);
                 ws.joinPlayer(new JoinPlayer(authData.authToken(),gameId, ChessGame.TeamColor.WHITE));
-                System.out.println(new ChessBoardUI(new ChessBoard()).printBoard(false));
+                currentGameID = gameId;
+                currentColor = ChessGame.TeamColor.WHITE;
+                state = State.INGAME;
             }
             else if (params[1].equals("black")) {
-                ws = new WebSocketFacade(url,repl,server);
                 ws.joinPlayer(new JoinPlayer(authData.authToken(),gameId, ChessGame.TeamColor.BLACK));
-                System.out.println(new ChessBoardUI(new ChessBoard()).printBoard(true));
+                currentGameID = gameId;
+                currentColor = ChessGame.TeamColor.BLACK;
+                state = State.INGAME;
             }
 
             else throw new ArgumentException("Please enter WHITE or BLACK");
@@ -166,18 +188,59 @@ public class ChessClient {
         throw new ArgumentException("Join game with: 5 <game ID> <WHITE|BLACK|<empty>>");
     }
 
-    public String joinObserver(String... params) throws DataAccessException, ArgumentException {
+    public String joinObserver(String... params) throws Exception {
         if (params.length == 1) {
             int gameNumber = Integer.parseInt(params[0]);
             if (gameNumber < 1 || gameNumber > games.size()) {
                 throw new ArgumentException("Invalid game number");
             }
             int gameId = games.get(gameNumber - 1).gameID();
-            server.joinGame(null, gameId, authData.authToken());
-            System.out.println(new ChessBoardUI(new ChessBoard()).printBoard(false));
-            System.out.println(new ChessBoardUI(new ChessBoard()).printBoard(true));
+            ws.joinObserver(new JoinObserver(authData.authToken(), gameId));
+            currentGameID = gameId;
+            currentColor = null;
+            state = State.INGAME;
             return String.format("You joined game %d as an observer.", gameId);
         } else
             throw new ArgumentException("Join as an observer with: 6 <game ID>");
+    }
+
+    public String makeMove(String... params) throws Exception {
+        if (params.length == 2) {
+            PositionConverter converter = new PositionConverter();
+            ChessPosition start = converter.convertPosition(params[0]);
+            ChessPosition end = converter.convertPosition(params[1]);
+            ws.makeMove(new MakeMove(authData.authToken(), currentGameID, new ChessMove(start, end)));
+            return "";
+        }
+        throw new ArgumentException("Must specify start and end position");
+    }
+
+    public String leave() throws Exception {
+        ws.leave(new Leave(authData.authToken(), currentGameID));
+        String s = String.format("You have left game %s", currentGameID);
+        currentGameID = 0;
+        currentColor = null;
+        return s;
+    }
+
+    public String resign() throws Exception {
+        ws.resign(new Resign(authData.authToken(), currentGameID));
+        return "You resigned";
+    }
+
+    public String redraw() throws Exception {
+        ws.redrawBoard(new RedrawBoard(authData.authToken(), currentGameID, currentColor));
+        return "";
+    }
+    
+    public String highlight(String... params) throws Exception {
+        if (params.length != 1) {
+            throw new ArgumentException("Highlight a piece's moves with: highlight <position>");
+        }
+        PositionConverter positionConverter = new PositionConverter();
+        ChessPosition position = positionConverter.convertPosition(params[0]);
+        ws.highlight(new Highlight(authData.authToken(), currentGameID, position, currentColor));
+
+        return "";
     }
 }

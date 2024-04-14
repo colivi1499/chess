@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import serverFacade.ServerFacade;
 import webSocketMessages.serverMessages.ServerMessage;
-import webSocketMessages.userCommands.JoinPlayer;
-import webSocketMessages.userCommands.UserGameCommand;
+import webSocketMessages.userCommands.*;
+
 import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
@@ -54,15 +54,58 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void leavePetShop(String visitorName) throws Exception {
+    public void joinObserver(JoinObserver joinObserver) throws Exception {
+        Gson gson = new GsonBuilder().registerTypeAdapter(UserGameCommand.class, new UserGameCommand.UserGameCommandDeserializer()).create();
         try {
-            var userGameCommand = new UserGameCommand(visitorName);
-            this.session.getBasicRemote().sendText(new Gson().toJson(userGameCommand));
-            this.session.close();
-        } catch (IOException ex) {
+            this.session.getBasicRemote().sendText(gson.toJson(joinObserver));
+        } catch (Exception ex) {
             throw new Exception(ex.getMessage());
         }
     }
 
+    public void makeMove(MakeMove makeMove) throws Exception {
+        Gson gson = new GsonBuilder().registerTypeAdapter(UserGameCommand.class, new UserGameCommand.UserGameCommandDeserializer()).create();
+        try {
+            this.session.getBasicRemote().sendText(gson.toJson(makeMove));
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
+
+    public void leave(Leave leave) throws Exception {
+        Gson gson = new GsonBuilder().registerTypeAdapter(UserGameCommand.class, new UserGameCommand.UserGameCommandDeserializer()).create();
+        try {
+            this.session.getBasicRemote().sendText(gson.toJson(leave));
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
+
+    public void resign(Resign resign) throws Exception {
+        Gson gson = new GsonBuilder().registerTypeAdapter(UserGameCommand.class, new UserGameCommand.UserGameCommandDeserializer()).create();
+        try {
+            this.session.getBasicRemote().sendText(gson.toJson(resign));
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
+
+    public void redrawBoard(RedrawBoard redrawBoard) throws Exception {
+        Gson gson = new GsonBuilder().registerTypeAdapter(UserGameCommand.class, new UserGameCommand.UserGameCommandDeserializer()).create();
+        try {
+            this.session.getBasicRemote().sendText(gson.toJson(redrawBoard));
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
+
+    public void highlight(Highlight highlight) throws Exception {
+        Gson gson = new GsonBuilder().registerTypeAdapter(UserGameCommand.class, new UserGameCommand.UserGameCommandDeserializer()).create();
+        try {
+            this.session.getBasicRemote().sendText(gson.toJson(highlight));
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
 }
 
