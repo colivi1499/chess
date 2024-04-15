@@ -36,6 +36,11 @@ public class ChessClient {
     private WebSocketFacade ws;
     private State state = State.SIGNEDOUT;
     private int currentGameID = 0;
+
+    public ChessGame.TeamColor getCurrentColor() {
+        return currentColor;
+    }
+
     private ChessGame.TeamColor currentColor = null;
 
     public ChessClient(int port, NotificationHandler repl) {
@@ -251,7 +256,8 @@ public class ChessClient {
 
     public String resign() throws Exception {
         ws.resign(new Resign(authData.authToken(), currentGameID));
-        return "You resigned";
+
+        return "";
     }
 
     public String redraw() throws Exception {

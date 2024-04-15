@@ -53,9 +53,11 @@ public class Repl implements NotificationHandler {
         switch (serverMessage.getServerMessageType()) {
             case LOAD_GAME:
                 ChessBoardUI boardUI = new ChessBoardUI(((LoadGame) serverMessage).getGame().getBoard());
-                String board = switch (((LoadGame) serverMessage).getColor()) {
+                String board = switch (client.getCurrentColor()) {
                     case WHITE -> boardUI.printBoard(false);
                     case BLACK -> boardUI.printBoard(true);
+                    case null -> boardUI.printBoard(false);
+
                 };
                 System.out.printf("\n%s%n", board);
                 break;

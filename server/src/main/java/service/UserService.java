@@ -50,13 +50,25 @@ public class UserService {
         String username = authService.authDAO.getUsername(authToken);
         if (authService.authDAO.getAuth(authToken) != null && gameService.getGame(gameID) != null) {
             if (clientColor == ChessGame.TeamColor.WHITE) {
-                if (gameService.getGame(gameID).whiteUsername() == null || Objects.equals(gameService.getGame(gameID).whiteUsername(), username))
-                    gameService.updateGame(gameID,new GameData(gameID, username,gameService.getGame(gameID).blackUsername(),gameService.getGame(gameID).gameName(),gameService.getGame(gameID).game()));
+                if (gameService.getGame(gameID).whiteUsername() == null || Objects.equals(gameService.getGame(gameID).whiteUsername(), username)) {
+                    String black = gameService.getGame(gameID).blackUsername();
+                    String name = gameService.getGame(gameID).gameName();
+                    ChessGame game = gameService.getGame(gameID).game();
+                    GameData gameData = new GameData(gameID, username, black,name,game);
+                    gameData.setGameEnded(gameService.getGame(gameID).isOver());
+                    gameService.updateGame(gameID,gameData);
+                }
                 else throw new DataAccessException("Bad color");
             }
             if (clientColor == ChessGame.TeamColor.BLACK) {
-                if (gameService.getGame(gameID).blackUsername() == null || Objects.equals(gameService.getGame(gameID).blackUsername(), username))
-                    gameService.updateGame(gameID,new GameData(gameID, gameService.getGame(gameID).whiteUsername(),username,gameService.getGame(gameID).gameName(),gameService.getGame(gameID).game()));
+                if (gameService.getGame(gameID).blackUsername() == null || Objects.equals(gameService.getGame(gameID).blackUsername(), username)) {
+                    String white = gameService.getGame(gameID).whiteUsername();
+                    String name = gameService.getGame(gameID).gameName();
+                    ChessGame game = gameService.getGame(gameID).game();
+                    GameData gameData = new GameData(gameID, white, username,name,game);
+                    gameData.setGameEnded(gameService.getGame(gameID).isOver());
+                    gameService.updateGame(gameID,gameData);
+                }
                 else throw new DataAccessException("Bad color");
             }
         }
