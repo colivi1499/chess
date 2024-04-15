@@ -1,8 +1,6 @@
 package ui;
 
 
-import chess.ChessGame;
-import dataAccess.DataAccessException;
 import spark.Spark;
 import webSocketFacade.NotificationHandler;
 import webSocketMessages.serverMessages.LoadGame;

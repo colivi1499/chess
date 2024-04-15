@@ -87,5 +87,4 @@ public class UserService {
         authService.clear();
         gameService.clear();
     }
-
 }

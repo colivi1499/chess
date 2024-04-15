@@ -11,6 +11,7 @@ import request.JoinGameRequest;
 import result.CreateGameResult;
 import result.ListGamesResult;
 
+import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -32,68 +33,73 @@ public class ServerFacade {
         var path = "/user";
         try {
             return this.makeRequest("POST", path, new UserData(username, password, email), AuthData.class, null);
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             throw new DataAccessException("Username is already taken");
         }
     }
 
-    public void clear() throws DataAccessException {
+    public void clear() throws Exception {
         var path = "/db";
-        this.makeRequest("DELETE", path, null, null, null);
+        try {
+            this.makeRequest("DELETE", path, null, null, null);
+        } catch (Exception e) {
+            throw new DataAccessException("Bad clear");
+        }
+
     }
 
-    public AuthData login(String username, String password) throws DataAccessException {
+    public AuthData login(String username, String password) throws Exception {
         var path = "/session";
         try {
             return this.makeRequest("POST", path, new UserData(username, password, null), AuthData.class, null);
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             switch(e.getMessage()) {
                 case "failure: 401":
                 case "failure: 403":
-                    throw new DataAccessException("Username or password is incorrect");
-                default: throw new DataAccessException("Invalid login");
+                    throw new Exception("Username or password is incorrect");
+                default: throw new Exception("Invalid login");
             }
         }
     }
 
-    public void logout(String authToken) throws DataAccessException {
+    public void logout(String authToken) throws Exception {
         var path = "/session";
         try {
             this.makeRequest("DELETE", path, null, null, authToken);
-        } catch (DataAccessException e) {
-            throw new DataAccessException("Unauthorized logout");
+        } catch (Exception e) {
+            throw new Exception("Unauthorized logout");
         }
     }
 
-    public CreateGameResult createGame(String gameName, String authToken) throws DataAccessException {
+    public CreateGameResult createGame(String gameName, String authToken) throws Exception {
         var path = "/game";
         try {
             return this.makeRequest("POST", path, new CreateGameRequest(gameName), CreateGameResult.class, authToken);
-        } catch (DataAccessException e) {
-            throw new DataAccessException("Unable to create game");
+        } catch (Exception e) {
+            throw new Exception("Unable to create game");
         }
     }
 
-    public void joinGame(String playerColor, int gameId, String authToken) throws DataAccessException {
+    public void joinGame(String playerColor, int gameId, String authToken) throws Exception {
         var path = "/game";
         try {
             this.makeRequest("PUT", path, new JoinGameRequest(playerColor, gameId), null, authToken);
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             switch(e.getMessage()) {
                 case "failure: 403":
-                    throw new DataAccessException("There is already a player in that spot");
-                default: throw new DataAccessException("Unable to join game");
+                    throw new Exception("There is already a player in that spot");
+                default: throw new Exception("Unable to join game");
             }
         }
 
     }
 
-    public ListGamesResult listGames(String authToken) throws DataAccessException {
+    public ListGamesResult listGames(String authToken) throws Exception {
         var path = "/game";
         return this.makeRequest("GET", path, null, ListGamesResult.class, authToken);
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws DataAccessException {
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws Exception {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
@@ -109,7 +115,7 @@ public class ServerFacade {
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
         } catch (Exception e) {
-            throw new DataAccessException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
     }
 
@@ -136,10 +142,10 @@ public class ServerFacade {
         return response;
     }
 
-    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, DataAccessException {
+    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, Exception {
         var status = http.getResponseCode();
         if (!isSuccessful(status)) {
-            throw new DataAccessException("failure: " + status);
+            throw new Exception("failure: " + status);
         }
     }
 

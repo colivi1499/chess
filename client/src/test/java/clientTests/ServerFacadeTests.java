@@ -22,12 +22,12 @@ public class ServerFacadeTests {
     }
 
     @BeforeEach
-    public void setup() throws DataAccessException {
+    public void setup() throws Exception {
         facade.clear();
     }
 
     @AfterAll
-    static void stopServer() throws DataAccessException {
+    static void stopServer() throws Exception {
         facade.clear();
         server.stop();
     }
@@ -46,7 +46,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void login() throws DataAccessException {
+    public void login() throws Exception {
         var authData = facade.register("SomeoneElse2","Password123", "johndoe@gmail.com");
         var authData2 = facade.login("SomeoneElse2","Password123");
         Assertions.assertTrue(authData.authToken().length() > 10 && authData2.authToken().length() > 10);
@@ -61,7 +61,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void logout() throws DataAccessException {
+    public void logout() throws Exception {
         var authData = facade.register("SomeoneElse2","Password123", "johndoe@gmail.com");
         facade.logout(authData.authToken());
         Assertions.assertDoesNotThrow(() -> facade.login("SomeoneElse2", "Password123"));
@@ -73,7 +73,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void createGame() throws DataAccessException {
+    public void createGame() throws Exception {
         var authData = facade.register("SomeoneElse2","Password123", "johndoe@gmail.com");
         CreateGameResult game = facade.createGame("game1",authData.authToken());
         Assertions.assertTrue(game.gameID() > 1000);
@@ -86,14 +86,14 @@ public class ServerFacadeTests {
 
 
     @Test
-    public void joinGame() throws DataAccessException {
+    public void joinGame() throws Exception {
         var authData = facade.register("SomeoneElse2","Password123", "johndoe@gmail.com");
         CreateGameResult game = facade.createGame("game1",authData.authToken());
         Assertions.assertDoesNotThrow(() -> facade.joinGame("BLACK", game.gameID(), authData.authToken()));
     }
 
     @Test
-    public void joinGameBad() throws DataAccessException {
+    public void joinGameBad() throws Exception {
         var authData = facade.register("SomeoneElse2","Password123", "johndoe@gmail.com");
         var authData2 = facade.register("SomeoneElse3","Password123", "johndoe@gmail.com");
         CreateGameResult game = facade.createGame("game1",authData.authToken());
@@ -101,7 +101,7 @@ public class ServerFacadeTests {
         Assertions.assertThrows(DataAccessException.class, () -> facade.joinGame("BLACK", game.gameID(), authData2.authToken()));
     }
     @Test
-    public void listGames() throws DataAccessException {
+    public void listGames() throws Exception {
         var authData = facade.register("SomeoneElse2","Password123", "johndoe@gmail.com");
         CreateGameResult game = facade.createGame("game1",authData.authToken());
         CreateGameResult game2 = facade.createGame("game2", authData.authToken());

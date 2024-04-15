@@ -2,22 +2,18 @@ package ui;
 
 import chess.*;
 import com.google.gson.Gson;
-import dataAccess.DataAccessException;
 import model.AuthData;
-import model.GameData;
+
 import result.CreateGameResult;
 import result.GameResult;
 import result.ListGamesResult;
 import serverFacade.ServerFacade;
 import webSocketFacade.NotificationHandler;
 import webSocketFacade.WebSocketFacade;
-import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.userCommands.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import static ui.EscapeSequences.SET_TEXT_COLOR_BLUE;
 import static ui.EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
@@ -107,10 +103,14 @@ public class ChessClient {
         return "";
     }
 
-    public String login(String... params) throws DataAccessException, ArgumentException {
+    public String login(String... params) throws ArgumentException {
         if (params.length == 2) {
             visitorName = params[0];
-            authData = server.login(visitorName, params[1]);
+            try {
+                authData = server.login(visitorName, params[1]);
+            } catch (Exception e) {
+                throw new ArgumentException("Sign in with: 3 <username> <password>");
+            }
             state = State.SIGNEDIN;
             return String.format("You signed in as %s.", visitorName);
         }
@@ -127,13 +127,13 @@ public class ChessClient {
         throw new ArgumentException("Register with: 4 <username> <password> <email>");
     }
 
-    public String logout() throws DataAccessException {
+    public String logout() throws Exception {
         server.logout(authData.authToken());
         state = State.SIGNEDOUT;
         return String.format("Logged out %s.", visitorName);
     }
 
-    public String createGame(String... params) throws ArgumentException, DataAccessException {
+    public String createGame(String... params) throws Exception {
         if (params.length == 1) {
             CreateGameResult game = server.createGame(params[0], authData.authToken());
             return String.format("You created the game %s.", new Gson().toJson(game));
@@ -141,7 +141,7 @@ public class ChessClient {
         throw new ArgumentException("Create game with: 3 <game name>");
     }
 
-    public String listGames() throws DataAccessException {
+    public String listGames() throws Exception {
         ListGamesResult listGamesResult = server.listGames(authData.authToken());
         if (listGamesResult.games().isEmpty())
             return "There are no games in the database";
