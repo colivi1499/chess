@@ -1,7 +1,6 @@
 package ui;
 
 
-import spark.Spark;
 import webSocketFacade.NotificationHandler;
 import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.LoadGameHighlight;
@@ -36,8 +35,6 @@ public class Repl implements NotificationHandler {
                 System.out.print(msg);
             }
         }
-        Spark.stop();
-        Spark.awaitStop();
         System.out.println();
     }
 
