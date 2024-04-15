@@ -138,6 +138,21 @@ public class WebSocketHandler {
             var notification = new Notification(message);
             connections.broadcast("", loadGameMessage, makeMove.getGameID());
             connections.broadcast(makeMove.getAuthString(), notification, makeMove.getGameID());
+            if (game.isOver()) {
+                var userCheckmateMessage = "You won by checkmate";
+                var checkmateMessage = String.format("%s won by checkmate", username);
+                var checkmateNotification = new Notification(checkmateMessage);
+                var userCheckmateNotification = new Notification(userCheckmateMessage);
+                connections.broadcast(makeMove.getAuthString(), checkmateNotification, makeMove.getGameID());
+                connections.sendToRootClient(makeMove.getAuthString(), userCheckmateNotification);
+            } else if (game.isInCheck()) {
+                var userCheckMessage = "You put the opponent in check";
+                var checkMessage = "Check";
+                var checkNotification = new Notification(checkMessage);
+                var userCheckmateNotification = new Notification(userCheckMessage);
+                connections.broadcast(makeMove.getAuthString(), checkNotification, makeMove.getGameID());
+                connections.sendToRootClient(makeMove.getAuthString(), userCheckmateNotification);
+            }
         } catch (InvalidMoveException | DataAccessException e) {
             var errorMessage = new Error("Error: " + e.getMessage());
             connections.sendToRootClient(makeMove.getAuthString(), errorMessage);

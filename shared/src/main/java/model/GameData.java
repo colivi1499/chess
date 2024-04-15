@@ -10,6 +10,14 @@ public class GameData {
     private ChessGame game;
     private boolean gameEnded;
 
+    public boolean isInCheck() {
+        if (game.isInCheck(ChessGame.TeamColor.WHITE) || game.isInCheck(ChessGame.TeamColor.BLACK))
+            inCheck = true;
+        return inCheck;
+    }
+
+    private boolean inCheck;
+
     public GameData(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game) {
         this.gameID = gameID;
         this.whiteUsername = whiteUsername;
