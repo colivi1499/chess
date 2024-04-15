@@ -3,7 +3,6 @@ package serverFacade;
 import chess.ChessGame;
 import chess.PawnMovesCalculator;
 import com.google.gson.Gson;
-import dataAccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
 import request.CreateGameRequest;
@@ -29,12 +28,12 @@ public class ServerFacade {
         this.serverUrl = "http://localhost:" + port;
     }
 
-    public AuthData register(String username, String password, String email) throws DataAccessException {
+    public AuthData register(String username, String password, String email) throws Exception {
         var path = "/user";
         try {
             return this.makeRequest("POST", path, new UserData(username, password, email), AuthData.class, null);
         } catch (Exception e) {
-            throw new DataAccessException("Username is already taken");
+            throw new Exception("Username is already taken");
         }
     }
 
@@ -43,7 +42,7 @@ public class ServerFacade {
         try {
             this.makeRequest("DELETE", path, null, null, null);
         } catch (Exception e) {
-            throw new DataAccessException("Bad clear");
+            throw new Exception("Bad clear");
         }
 
     }

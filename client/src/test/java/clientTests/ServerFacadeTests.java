@@ -34,13 +34,13 @@ public class ServerFacadeTests {
 
 
     @Test
-    public void register() throws DataAccessException {
+    public void register() throws Exception {
         var authData = facade.register("SomeoneElse2","Password123", "johndoe@gmail.com");
         Assertions.assertTrue(authData.authToken().length() > 10);
     }
 
     @Test
-    public void registerBadUsername() throws DataAccessException {
+    public void registerBadUsername() throws Exception {
         facade.register("SomeoneElse2","Password123", "johndoe@gmail.com");
         Assertions.assertThrows(DataAccessException.class, () -> facade.register("SomeoneElse2", "some_password", "an_email"));
     }
@@ -54,7 +54,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void badLogin() throws DataAccessException {
+    public void badLogin() throws Exception {
         facade.register("SomeoneElse2","Password123", "johndoe@gmail.com");
         Assertions.assertThrows(DataAccessException.class, () -> facade.login("SomeoneElse2", "a wrong password"));
         Assertions.assertThrows(DataAccessException.class, () -> facade.login("Not a user", "Password12345"));
