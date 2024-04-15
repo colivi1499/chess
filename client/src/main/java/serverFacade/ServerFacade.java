@@ -1,7 +1,5 @@
 package serverFacade;
 
-import chess.ChessGame;
-import chess.PawnMovesCalculator;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.UserData;
@@ -10,7 +8,6 @@ import request.JoinGameRequest;
 import result.CreateGameResult;
 import result.ListGamesResult;
 
-import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
