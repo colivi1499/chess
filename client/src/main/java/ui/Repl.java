@@ -45,36 +45,42 @@ public class Repl implements NotificationHandler {
 
 
     private void printPrompt() {
-        System.out.print("\n" + RESET_TEXT_COLOR + SET_BG_COLOR_DARK_GREY + ">>> " + SET_TEXT_COLOR_GREEN);
+        System.out.print("\n\u001B[0m" + ">>> " + SET_TEXT_COLOR_GREEN);
     }
 
     @Override
     public void notify(ServerMessage serverMessage) {
-        if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
-            ChessBoardUI boardUI = new ChessBoardUI(((LoadGame) serverMessage).getGame().getBoard());
-            String board = "";
-            if (((LoadGame) serverMessage).getColor() == ChessGame.TeamColor.WHITE)
-                board = boardUI.printBoard(false);
-            else if (((LoadGame) serverMessage).getColor() == ChessGame.TeamColor.BLACK)
-                board = boardUI.printBoard(true);
-            System.out.println(String.format("\n%s",board));
-        } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME_HIGHLIGHT) {
-            ChessBoardUI boardUI = new ChessBoardUI(((LoadGameHighlight) serverMessage).getGame().getBoard());
-            String board = "";
-            if (((LoadGameHighlight) serverMessage).getColor() == ChessGame.TeamColor.WHITE)
-                board = boardUI.printBoardHighlight(false,((LoadGameHighlight) serverMessage).getPosition());
-            else if (((LoadGameHighlight) serverMessage).getColor() == ChessGame.TeamColor.BLACK)
-                board = boardUI.printBoardHighlight(true,((LoadGameHighlight) serverMessage).getPosition());
-            System.out.println(String.format("\n%s",board));
-        } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
-            System.out.println("\n" + SET_TEXT_COLOR_MAGENTA + ((Notification) serverMessage).getMessage());
-            printPrompt();
-        } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
-            System.out.println("\n" + SET_TEXT_COLOR_RED + ((webSocketMessages.serverMessages.Error) serverMessage).getErrorMessage());
-            printPrompt();
-        } else {
-            System.out.println("\n" + SET_TEXT_COLOR_RED + ((webSocketMessages.serverMessages.Error) serverMessage).getErrorMessage());
-            printPrompt();
+        switch (serverMessage.getServerMessageType()) {
+            case LOAD_GAME:
+                ChessBoardUI boardUI = new ChessBoardUI(((LoadGame) serverMessage).getGame().getBoard());
+                String board = switch (((LoadGame) serverMessage).getColor()) {
+                    case WHITE -> boardUI.printBoard(false);
+                    case BLACK -> boardUI.printBoard(true);
+                };
+                System.out.printf("\n%s%n", board);
+                break;
+            case LOAD_GAME_HIGHLIGHT:
+                ChessBoardUI boardUIHighlight = new ChessBoardUI(((LoadGameHighlight) serverMessage).getGame().getBoard());
+                String boardHighlight = switch (((LoadGameHighlight) serverMessage).getColor()) {
+                    case WHITE ->
+                            boardUIHighlight.printBoardHighlight(false, ((LoadGameHighlight) serverMessage).getPosition());
+                    case BLACK ->
+                            boardUIHighlight.printBoardHighlight(true, ((LoadGameHighlight) serverMessage).getPosition());
+                };
+                System.out.printf("\n%s%n", boardHighlight);
+                break;
+            case NOTIFICATION:
+                System.out.println("\n" + SET_TEXT_COLOR_MAGENTA + ((Notification) serverMessage).getMessage());
+                printPrompt();
+                break;
+            case ERROR:
+                System.out.println("\n" + SET_TEXT_COLOR_RED + ((webSocketMessages.serverMessages.Error) serverMessage).getErrorMessage());
+                printPrompt();
+                break;
+            default:
+                System.out.println("\n" + SET_TEXT_COLOR_RED + serverMessage);
+                printPrompt();
         }
+
     }
 }

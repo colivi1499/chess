@@ -19,5 +19,6 @@ public class RedrawBoard extends UserGameCommand {
         super(authToken);
         this.gameId = gameId;
         this.commandType = CommandType.REDRAW_BOARD;
+        this.teamColor = teamColor;
     }
 }

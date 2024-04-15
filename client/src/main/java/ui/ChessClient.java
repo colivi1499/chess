@@ -1,16 +1,15 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessPosition;
+import chess.*;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.AuthData;
+import model.GameData;
 import result.CreateGameResult;
 import result.GameResult;
 import result.ListGamesResult;
 import serverFacade.ServerFacade;
+import webSocketFacade.NotificationHandler;
 import webSocketFacade.WebSocketFacade;
 import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.userCommands.*;
@@ -33,33 +32,39 @@ public class ChessClient {
     private final int port;
     private final String url;
     private final ServerFacade server;
-    private final Repl repl;
+    private final NotificationHandler repl;
     private WebSocketFacade ws;
     private State state = State.SIGNEDOUT;
     private int currentGameID = 0;
     private ChessGame.TeamColor currentColor = null;
 
-    public ChessClient(int port, Repl repl) {
+    public ChessClient(int port, NotificationHandler repl) {
         this.port = port;
         this.repl = repl;
         this.server = new ServerFacade(port);
         url = "http://localhost:" + port;
         try {
-            ws = new WebSocketFacade(url,repl,server);
+            ws = new WebSocketFacade(url,repl);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
     public String help() {
-        if (state == State.SIGNEDOUT)
-            return String.format("1. Help %s- with possible commands%s\n2. Quit %s- playing chess%s\n3. Login <username> <password> %s- to play chess%s\n" +
-                            "4. Register <username> <password> <email> %s- to create an account%s\n",
-                    SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY,
-                    SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE);
-        else
-            return String.format("1. Help %s- with possible commands%s\n2. Logout user\n3. Create Game <name>\n" +
-                            "4. List Games %s- in the database%s\n5. Join Game <index> <WHITE|BLACK>\n6. Join Observer",
-                    SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE);
+        switch (state) {
+            case State.SIGNEDOUT:
+                return String.format("1. Help %s- with possible commands%s\n2. Quit %s- playing chess%s\n3. Login <username> <password> %s- to play chess%s\n" +
+                                "4. Register <username> <password> <email> %s- to create an account%s\n",
+                        SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY,
+                        SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE);
+            case State.INGAME:
+                return String.format("Help %s- with possible commands%s\nmove <startPos> <endPos> (<promotion piece>)\nhighlight <position>\n" +
+                                "resign %s- forfeit the game%s\nredraw\nleave",
+                        SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE);
+            default:
+                return String.format("1. Help %s- with possible commands%s\n2. Logout user\n3. Create Game <name>\n" +
+                                "4. List Games %s- in the database%s\n5. Join Game <index> <WHITE|BLACK>\n6. Join Observer",
+                        SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY, SET_TEXT_COLOR_BLUE);
+        }
     }
 
     public String eval(String input) throws Exception {
@@ -147,45 +152,54 @@ public class ChessClient {
     }
 
     public String joinGame(String... params) throws Exception {
-        if (params.length == 1) {
-            int gameNumber;
-            try {
-                gameNumber = Integer.parseInt(params[0]);
-            } catch (Exception e) {
-                throw new ArgumentException("Join game with: 5 <game ID> <WHITE|BLACK|<empty>>");
-            }
-            if (gameNumber < 1 || gameNumber > games.size()) {
-                throw new ArgumentException("Invalid game number");
-            }
-            int gameId = games.get(gameNumber - 1).gameID();
-            ws.joinObserver(new JoinObserver(authData.authToken(), gameId));
-            currentGameID = gameId;
-            currentColor = null;
-            state = State.INGAME;
-            return String.format("You joined game %d.", gameId);
-        } else if (params.length == 2) {
-            int gameNumber = Integer.parseInt(params[0]);
-            if (gameNumber < 1 || gameNumber > games.size()) {
-                throw new ArgumentException("Invalid game number");
-            }
-            int gameId = games.get(gameNumber - 1).gameID();
-            if (params[1].equals("white")) {
-                ws.joinPlayer(new JoinPlayer(authData.authToken(),gameId, ChessGame.TeamColor.WHITE));
+        int gameNumber;
+        int gameId;
+        switch (params.length) {
+            case 1:
+                try {
+                    gameNumber = Integer.parseInt(params[0]);
+                } catch (NumberFormatException e) {
+                    throw new ArgumentException("Join game with: 5 <game ID> <WHITE|BLACK|<empty>>");
+                }
+                if (gameNumber < 1 || gameNumber > games.size()) {
+                    throw new ArgumentException("Invalid game number");
+                }
+                gameId = games.get(gameNumber - 1).gameID();
+                server.joinGame(null, gameId, authData.authToken());
+                ws.joinObserver(new JoinObserver(authData.authToken(), gameId));
                 currentGameID = gameId;
-                currentColor = ChessGame.TeamColor.WHITE;
+                currentColor = null;
                 state = State.INGAME;
-            }
-            else if (params[1].equals("black")) {
-                ws.joinPlayer(new JoinPlayer(authData.authToken(),gameId, ChessGame.TeamColor.BLACK));
-                currentGameID = gameId;
-                currentColor = ChessGame.TeamColor.BLACK;
-                state = State.INGAME;
-            }
+                return String.format("You joined game %d.", gameId);
 
-            else throw new ArgumentException("Please enter WHITE or BLACK");
-            return String.format("You joined game %d", gameId);
+            case 2:
+                gameNumber = Integer.parseInt(params[0]);
+                if (gameNumber < 1 || gameNumber > games.size()) {
+                    throw new ArgumentException("Invalid game number");
+                }
+                gameId = games.get(gameNumber - 1).gameID();
+                switch (params[1].toLowerCase()) {
+                    case "white":
+                        server.joinGame("WHITE", gameId, authData.authToken());
+                        ws.joinPlayer(new JoinPlayer(authData.authToken(), gameId, ChessGame.TeamColor.WHITE));
+                        currentColor = ChessGame.TeamColor.WHITE;
+                        break;
+                    case "black":
+                        server.joinGame("BLACK", gameId, authData.authToken());
+                        ws.joinPlayer(new JoinPlayer(authData.authToken(), gameId, ChessGame.TeamColor.BLACK));
+                        currentColor = ChessGame.TeamColor.BLACK;
+                        break;
+                    default:
+                        throw new ArgumentException("Please enter WHITE or BLACK");
+                }
+                currentGameID = gameId;
+                state = State.INGAME;
+                return String.format("You joined game %d", gameId);
+
+            default:
+                throw new ArgumentException("Join game with: 5 <game ID> <WHITE|BLACK|<empty>>");
         }
-        throw new ArgumentException("Join game with: 5 <game ID> <WHITE|BLACK|<empty>>");
+
     }
 
     public String joinObserver(String... params) throws Exception {
@@ -195,6 +209,7 @@ public class ChessClient {
                 throw new ArgumentException("Invalid game number");
             }
             int gameId = games.get(gameNumber - 1).gameID();
+            server.joinGame(null, gameId, authData.authToken());
             ws.joinObserver(new JoinObserver(authData.authToken(), gameId));
             currentGameID = gameId;
             currentColor = null;
@@ -205,13 +220,23 @@ public class ChessClient {
     }
 
     public String makeMove(String... params) throws Exception {
-        if (params.length == 2) {
-            PositionConverter converter = new PositionConverter();
-            ChessPosition start = converter.convertPosition(params[0]);
-            ChessPosition end = converter.convertPosition(params[1]);
-            ws.makeMove(new MakeMove(authData.authToken(), currentGameID, new ChessMove(start, end)));
-            return "";
+        switch (params.length) {
+            case 2:
+                PositionConverter converter = new PositionConverter();
+                ChessPosition start = converter.convertPosition(params[0]);
+                ChessPosition end = converter.convertPosition(params[1]);
+                ws.makeMove(new MakeMove(authData.authToken(), currentGameID, new ChessMove(start, end)));
+                return "";
+            case 3:
+                PositionConverter c = new PositionConverter();
+                PieceConverter pieceConverter = new PieceConverter();
+                ChessPosition s = c.convertPosition(params[0]);
+                ChessPosition e = c.convertPosition(params[1]);
+                ChessPiece.PieceType piece = pieceConverter.convertPiece(params[2]);
+                ws.makeMove(new MakeMove(authData.authToken(), currentGameID, new ChessMove(s, e, piece)));
         }
+
+
         throw new ArgumentException("Must specify start and end position");
     }
 
@@ -220,6 +245,7 @@ public class ChessClient {
         String s = String.format("You have left game %s", currentGameID);
         currentGameID = 0;
         currentColor = null;
+        state = State.SIGNEDIN;
         return s;
     }
 

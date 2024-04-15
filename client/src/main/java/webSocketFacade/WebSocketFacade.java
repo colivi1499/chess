@@ -17,7 +17,7 @@ public class WebSocketFacade extends Endpoint {
     javax.websocket.Session session;
     NotificationHandler notificationHandler;
 
-    public WebSocketFacade(String url, NotificationHandler notificationHandler, ServerFacade serverFacade) throws Exception {
+    public WebSocketFacade(String url, NotificationHandler notificationHandler) throws Exception {
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/connect");

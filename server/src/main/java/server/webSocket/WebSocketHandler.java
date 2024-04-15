@@ -74,8 +74,7 @@ public class WebSocketHandler {
     }
 
     private void joinPlayer(JoinPlayer joinPlayer, Session session) throws IOException {
-        connections.add(joinPlayer.getAuthString(), session);
-        connections.addLobby(joinPlayer.getGameID(), joinPlayer.getAuthString());
+        connections.add(joinPlayer.getAuthString(), session, joinPlayer.getGameID());
         try {
             String username = userService.getUsername(joinPlayer.getAuthString());
             var message = String.format("%s joined the game as %s.", username, joinPlayer.getTeamColorString());
@@ -83,9 +82,15 @@ public class WebSocketHandler {
             GameData game = userService.gameService.getGame(joinPlayer.getGameID());
             ChessGame.TeamColor color = joinPlayer.getTeamColor();
             var loadGameMessage = new LoadGame(game.game(), color);
-            userService.joinGame(color,joinPlayer.getGameID(),joinPlayer.getAuthString());
-            connections.sendToRootClient(joinPlayer.getAuthString(), loadGameMessage);
-            connections.broadcast(joinPlayer.getAuthString(), notification, joinPlayer.getGameID());
+            boolean badJoinBlack = color == ChessGame.TeamColor.BLACK && game.blackUsername() == null;
+            boolean badJoinWhite = color == ChessGame.TeamColor.WHITE && game.whiteUsername() == null;
+            if (!(badJoinWhite || badJoinBlack)) {
+                userService.joinGame(color,joinPlayer.getGameID(),joinPlayer.getAuthString());
+                connections.sendToRootClient(joinPlayer.getAuthString(), loadGameMessage);
+                connections.broadcast(joinPlayer.getAuthString(), notification, joinPlayer.getGameID());
+            } else {
+                throw new DataAccessException("bad join");
+            }
         } catch (DataAccessException e) {
             var errorMessage = new Error("Error: spot already taken");
             if (e.getMessage().equals("bad join"))
@@ -95,8 +100,7 @@ public class WebSocketHandler {
     }
 
     private void joinObserver(JoinObserver joinObserver, Session session) throws IOException {
-        connections.add(joinObserver.getAuthString(), session);
-        connections.addLobby(joinObserver.getGameID(), joinObserver.getAuthString());
+        connections.add(joinObserver.getAuthString(), session, joinObserver.getGameID());
         try {
             String username = userService.getUsername(joinObserver.getAuthString());
             var message = String.format("%s joined the game as an observer", username);
@@ -141,11 +145,11 @@ public class WebSocketHandler {
     }
 
     private void resign(Resign resign) throws IOException {
-        var message = String.format("%s resigned", resign.getAuthString());
-        var notification = new Notification(message);
         try {
             GameData game = userService.gameService.getGame(resign.getGameID());
             String username = userService.getUsername(resign.getAuthString());
+            var message = String.format("%s resigned", username);
+            var notification = new Notification(message);
             if (!(username.equals(game.whiteUsername()) || username.equals(game.blackUsername()))) {
                 throw new InvalidMoveException("You are an observer");
             }
@@ -176,7 +180,6 @@ public class WebSocketHandler {
             userService.gameService.updateGame(leave.getGameID(), game);
             connections.broadcast("", notification, leave.getGameID());
             connections.remove(leave.getAuthString());
-            connections.removeUserFromLobby(leave.getAuthString(),leave.getGameID());
         } catch (Exception e) {
             var errorMessage = new Error("Error: " + e.getMessage());
             connections.sendToRootClient(leave.getAuthString(), errorMessage);
